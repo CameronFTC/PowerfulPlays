@@ -83,10 +83,16 @@ public class TFod extends LinearOpMode {
             tfod.setZoom(1.0, 16.0/9.0);
         }
 
-        /** Wait for the game to begin */
+        // Wait for the game to begin
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
         waitForStart();
+
+        double col = 0;
+        double row = 0;
+        double width = 0;
+        double height = 0;
+        double error = 0;
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
@@ -100,10 +106,10 @@ public class TFod extends LinearOpMode {
                         // step through the list of recognitions and display image position/size information for each one
                         // Note: "Image number" refers to the randomized image orientation/number
                         for (Recognition recognition : updatedRecognitions) {
-                            double col = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                            double row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-                            double width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
-                            double height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
+                            col = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                            row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+                            width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
+                            height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
 
                             telemetry.addData(""," ");
                             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
@@ -113,11 +119,15 @@ public class TFod extends LinearOpMode {
                         telemetry.update();
                     }
                 }
+
+                //FIND CONSTANT
+                error = (hw.getAngle() - getHeading(width, height, col, row)) * 0.1;
+
                 if(Math.abs(gamepad1.left_stick_y) > 0.1){
-                    hw.bL.setPower(gamepad1.left_stick_y);
-                    hw.bR.setPower(gamepad1.left_stick_y);
-                    hw.fL.setPower(gamepad1.left_stick_y);
-                    hw.fR.setPower(gamepad1.left_stick_y);
+                    hw.bL.setPower(gamepad1.left_stick_y + error);
+                    hw.bR.setPower(gamepad1.left_stick_y - error);
+                    hw.fL.setPower(gamepad1.left_stick_y + error);
+                    hw.fR.setPower(gamepad1.left_stick_y - error);
                 }
                 else{
                     hw.bL.setPower(0);
@@ -161,5 +171,15 @@ public class TFod extends LinearOpMode {
         // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
         // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
+    }
+
+    public double getHeading(double width, double height, double col, double row){
+        //FIND CONSTANT
+        double heading = Math.tan((Math.abs(640 - col)) / (1/(width * width)));
+
+        if (col < 640)
+            heading *= -1;
+
+        return heading;
     }
 }
