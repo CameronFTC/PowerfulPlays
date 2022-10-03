@@ -175,7 +175,7 @@ public class TFod extends LinearOpMode {
 
     public double getHeading(double width, double height, double col, double row){
         //FIND CONSTANT
-        double heading = Math.tan((Math.abs(640 - col)) / (1/(width * width)));
+        double heading = Math.tan((Math.abs(640 - col)) / (-5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97));
 
         if (col < 640)
             heading *= -1;
