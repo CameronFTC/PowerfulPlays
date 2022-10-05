@@ -17,6 +17,8 @@ public class hwMap {
     public DcMotor fR;
     public DcMotor bR;
     public DcMotor bL;
+    public DcMotor turret;
+    public DcMotor lift;
 
     public CRServo roller1;
     public CRServo roller2;

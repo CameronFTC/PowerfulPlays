@@ -115,11 +115,24 @@ public class TFod extends LinearOpMode {
                             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
                             telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
                             telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
-                            error = getHeading(width, height, col, row);
+
                             telemetry.addData("error from object:", error);
                             telemetry.addData("side 1: ", Math.abs(270 - col)/96.0);
                             telemetry.addData("side 2: ", -5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97);
                         }
+
+                        error = getHeading(width, height, col, row) * 0.025;
+
+                        if (updatedRecognitions.size() == 0){
+                            error = 0;
+                        }
+
+                        hw.bL.setPower(gamepad1.left_stick_y + error);
+                        hw.bR.setPower((-gamepad1.left_stick_y) + error);
+                        hw.fL.setPower(gamepad1.left_stick_y + error);
+                        hw.fR.setPower((-gamepad1.left_stick_y) + error);
+
+
                         telemetry.update();
                     }
                 }
@@ -128,13 +141,10 @@ public class TFod extends LinearOpMode {
 
 
 //                if(Math.abs(gamepad1.left_stick_y) > 0.1){
-                    /*while(Math.abs(error) > 2){
-                        hw.bL.setPower(gamepad1.left_stick_y + error);
-                        hw.bR.setPower(gamepad1.left_stick_y + error);
-                        hw.fL.setPower(gamepad1.left_stick_y + error);
-                        hw.fR.setPower(gamepad1.left_stick_y + error);
-                        error = (hw.getAngle() - getHeading(width, height, col, row)) * 0.02;
-                    }*/
+                    //while(Math.abs(error) > 2){
+
+
+                    //}
 //                }
 //                else{
 //                    hw.bL.setPower(0);
@@ -182,11 +192,11 @@ public class TFod extends LinearOpMode {
 
     public double getHeading(double width, double height, double col, double row){
         //FIND CONSTANT
-        double heading = Math.atan(((Math.abs(270 - col))/96.0) / (-5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97));
+        double heading = Math.toDegrees(Math.atan(((Math.abs(270 - col)/96.0)/ (-5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97))));
 
-        if (col < 640)
+        if (col < 270)
             heading *= -1;
 
-        return heading;
+        return -heading;
     }
 }
