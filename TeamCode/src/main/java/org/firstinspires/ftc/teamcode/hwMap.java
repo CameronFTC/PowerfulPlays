@@ -125,6 +125,8 @@ public class hwMap {
 
             opmode.telemetry.addData("angle: ", getAngle());
             opmode.telemetry.update();
+
+            initPos = getAngle();
         }
 
         fL.setPower(0);
@@ -134,7 +136,23 @@ public class hwMap {
     }
 
     public void turretPID(double pwr, double angle, double p, double i, double d, double timeout){
+        double initPos = 0;
+        double initTurretPos = 0;
+        ElapsedTime runtime = new ElapsedTime();
+        double integral = 0;
+        while(Math.abs(angle - initPos) >= 1 && runtime.seconds() < timeout){
+            double currTurretPos = turret.getCurrentPosition();
+            double prevError = angle - initPos;
+            double proportional = p * prevError;
+            double prevTime = runtime.seconds();
+            integral += i * (prevError * (runtime.seconds() - prevTime));
+            double derivative = d * ((angle - getTurretAngle(currTurretPos - initTurretPos) - prevError) / (runtime.seconds() - prevTime));
 
+            turret.setPower(proportional + integral + derivative);
+
+            initPos = getTurretAngle(Math.abs(currTurretPos - initTurretPos));
+        }
+        turret.setPower(0);
     }
 
     public void encoderMove(double speed, double target){
@@ -152,5 +170,12 @@ public class hwMap {
         fR.setPower(0);
         bL.setPower(0);
         bR.setPower(0);
+    }
+
+    public double getTurretAngle(double ticks){
+        double turretRadius = (9 + 7 / 8.0) / 2;
+        double ticksToInches = 0.0; //find
+
+        return (ticks * ticksToInches) / turretRadius * 360;
     }
 }

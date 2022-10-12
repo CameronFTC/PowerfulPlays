@@ -202,6 +202,8 @@ public class TFod extends LinearOpMode {
                 if (updatedRecognitions.size() == 0){
                     error = 0;
                 }
+
+                hw.turretPID(0.9, error, 0.025, 0, 0, 2);
                 telemetry.update();
             }
         }
