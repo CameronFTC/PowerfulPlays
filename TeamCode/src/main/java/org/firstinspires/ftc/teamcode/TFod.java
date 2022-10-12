@@ -153,6 +153,24 @@ public class TFod extends LinearOpMode {
     /**
      * Initialize the Vuforia localization engine.
      */
+
+    //if a
+    private void theSnapper(){
+        //if camera sees it
+            //activate tfod, check angle and //size
+            //while of PID until angle is within threshold
+                //PID of our encoders
+            //activate intake thingy and grab cone
+        //else
+            //telem: skill issue l bozo
+            //if b
+                    //activate intake thingy and grab cone
+
+
+
+
+    }
+
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
