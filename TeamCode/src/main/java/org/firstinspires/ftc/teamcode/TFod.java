@@ -166,9 +166,45 @@ public class TFod extends LinearOpMode {
             //if b
                     //activate intake thingy and grab cone
 
+        double col = 0;
+        double row = 0;
+        double width = 0;
+        double height = 0;
+        double error = 0;
 
+        if (tfod != null) {
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                telemetry.addData("# Objects Detected", updatedRecognitions.size());
 
+                // step through the list of recognitions and display image position/size information for each one
+                // Note: "Image number" refers to the randomized image orientation/number
+                for (Recognition recognition : updatedRecognitions) {
+                    col = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                    row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+                    width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
+                    height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
 
+                    telemetry.addData(""," ");
+                    telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
+                    telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
+                    telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
+
+                    telemetry.addData("error from object:", error);
+                    telemetry.addData("side 1: ", Math.abs(270 - col)/96.0);
+                    telemetry.addData("side 2: ", -5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97);
+                }
+
+                error = getHeading(width, height, col, row);
+
+                if (updatedRecognitions.size() == 0){
+                    error = 0;
+                }
+                telemetry.update();
+            }
+        }
     }
 
     private void initVuforia() {

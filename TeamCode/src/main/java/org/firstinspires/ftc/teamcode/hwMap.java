@@ -40,6 +40,9 @@ public class hwMap {
         bL = opmode.hardwareMap.get(DcMotor.class, "bL");
         bR = opmode.hardwareMap.get(DcMotor.class, "bR");
 
+        turret = opmode.hardwareMap.get(DcMotor.class, "turret");
+        lift = opmode.hardwareMap.get(DcMotor.class, "lift");
+
         roller1 = opmode.hardwareMap.get(CRServo.class, "roller1");
         roller2 = opmode.hardwareMap.get(CRServo.class, "roller2");
 
@@ -128,6 +131,10 @@ public class hwMap {
         fR.setPower(0);
         bL.setPower(0);
         bR.setPower(0);
+    }
+
+    public void turretPID(double pwr, double angle, double p, double i, double d, double timeout){
+
     }
 
     public void encoderMove(double speed, double target){
