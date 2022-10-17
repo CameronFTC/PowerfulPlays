@@ -135,23 +135,31 @@ public class hwMap {
         bR.setPower(0);
     }
 
-    public void turretPID(double pwr, double angle, double p, double i, double d, double timeout){
-        double initPos = 0;
-        double initTurretPos = 0;
+    public void turretPID(double pwr, double angle, double kp, double ki, double kd, double timeout){
+        double prev = getTurretAngle(turret.getCurrentPosition());
+        double current = getTurretAngle(turret.getCurrentPosition());
         ElapsedTime runtime = new ElapsedTime();
-        double integral = 0;
-        while(Math.abs(angle - initPos) >= 1 && runtime.seconds() < timeout){
-            double currTurretPos = turret.getCurrentPosition();
-            double prevError = angle - initPos;
-            double proportional = p * prevError;
-            double prevTime = runtime.seconds();
-            integral += i * (prevError * (runtime.seconds() - prevTime));
-            double derivative = d * ((angle - getTurretAngle(currTurretPos - initTurretPos) - prevError) / (runtime.seconds() - prevTime));
+        double p;
+        double i = 0;
+        double d;
+        double preTime = 0;
 
-            turret.setPower(proportional + integral + derivative);
+        while(Math.abs(current - angle) > 1 && runtime.seconds() < timeout){
+            current = getTurretAngle(turret.getCurrentPosition());
+            double currTime = runtime.seconds();
 
-            initPos = getTurretAngle(Math.abs(currTurretPos - initTurretPos));
+            p = (current - angle) * kp;
+            i += (current - prev) * (currTime - preTime) * ki;
+            d = ((current - prev)/(currTime - preTime)) * kd;
+
+            pwr = p + i + d;
+
+            turret.setPower(pwr);
+            preTime = currTime;
+            prev = current;
+
         }
+
         turret.setPower(0);
     }
 
@@ -173,9 +181,7 @@ public class hwMap {
     }
 
     public double getTurretAngle(double ticks){
-        double turretRadius = (9 + 7 / 8.0) / 2;
-        double ticksToInches = 0.0; //find
-
-        return (ticks * ticksToInches) / turretRadius * 360;
+        double totalTicks = 120;
+        return ticks/totalTicks * 360;
     }
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -154,6 +155,7 @@ public class TFod extends LinearOpMode {
      * Initialize the Vuforia localization engine.
      */
 
+
     //if a
     private void theSnapper(){
         //if camera sees it
@@ -199,8 +201,40 @@ public class TFod extends LinearOpMode {
 
                 error = getHeading(width, height, col, row);
 
-                if (updatedRecognitions.size() == 0){
-                    error = 0;
+                if (updatedRecognitions.size() != 0){
+
+                    ElapsedTime runtime = new ElapsedTime();
+                    double integral = 0;
+                    double progress = 0.00;
+                    //reset encoders
+
+
+                    while(Math.abs(error - progress) >= 2 && runtime.seconds() < 2){
+
+                        double prevError = error - progress;
+                        double proportional = 0.025 * prevError;
+                        double prevTime = runtime.seconds();
+                        integral += i * (prevError * (runtime.seconds() - prevTime));
+                        double derivative = d * ((angle - getAngle() - prevError) / (runtime.seconds() - prevTime));
+
+                        fL.setPower((proportional + integral + derivative) * pwr);
+                        fR.setPower(-(proportional + integral + derivative) * pwr);
+                        bL.setPower((proportional + integral + derivative) * pwr);
+                        bR.setPower((proportional + integral + derivative) * pwr);
+
+
+                        opmode.telemetry.addData("angle: ", getAngle());
+                        opmode.telemetry.update();
+                    }
+
+                    fL.setPower(0);
+                    fR.setPower(0);
+                    bL.setPower(0);
+                    bR.setPower(0);
+
+
+
+
                 }
 
                 hw.turretPID(0.9, error, 0.025, 0, 0, 2);
