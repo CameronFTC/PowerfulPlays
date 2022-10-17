@@ -60,6 +60,14 @@ public class TFod extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
+    private Runnable turnTurret = new Runnable() {
+        @Override
+        public void run() {
+            theSnapper();
+        }
+    };
+
+
     @Override
     public void runOpMode() {
         hw = new hwMap(this);
