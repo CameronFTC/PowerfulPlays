@@ -30,8 +30,12 @@ public class hwMap {
     public double globalAngle;
     public double referenceAngle;
 
+
+
     LinearOpMode opmode;
     ElapsedTime runtime = new ElapsedTime();
+
+    private Thread turretTurn;
 
     public hwMap(LinearOpMode opmode) {
         this.opmode = opmode;
@@ -60,6 +64,10 @@ public class hwMap {
         imu = opmode.hardwareMap.get(BNO055IMU.class, "imu");
 
         imu.initialize(parameters);
+
+        //turretTurn = new Thread(turningTurret);
+
+
         //driveTrain.srvMarker.setPosition(1);
 
 
@@ -76,6 +84,10 @@ public class hwMap {
         opmode.telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
         opmode.telemetry.update();
 
+    }
+
+    public void setThread(Runnable run){
+        turretTurn = new Thread(run);
     }
 
     public void resetAngle() {
@@ -104,6 +116,12 @@ public class hwMap {
         lastAngles = angles;
 
         return -globalAngle;
+    }
+
+    public void drop(){
+
+
+
     }
 
     public void turnPID(double pwr, double angle, double p, double i, double d, double timeout) { //This is the good PID method use this one

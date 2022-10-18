@@ -8,7 +8,8 @@ public class PPTeleOp extends LinearOpMode {
     hwMap hw;
     @Override
     public void runOpMode() {
-        hw = new hwMap(this);
+
+        hw = new hwMap(this );
         waitForStart();
         while(opModeIsActive()){
             trigMecanum();

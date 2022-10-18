@@ -60,10 +60,11 @@ public class TFod extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
-    private Runnable turnTurret = new Runnable() {
+    private Runnable turretTurn = new Runnable(){
         @Override
         public void run() {
             theSnapper();
+            hw.drop();
         }
     };
 
@@ -71,6 +72,8 @@ public class TFod extends LinearOpMode {
     @Override
     public void runOpMode() {
         hw = new hwMap(this);
+        hw.setThread(turretTurn);
+
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia();
