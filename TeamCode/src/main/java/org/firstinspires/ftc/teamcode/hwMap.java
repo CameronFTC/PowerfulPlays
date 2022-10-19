@@ -42,12 +42,24 @@ public class hwMap {
     public double globalAngle;
     public double referenceAngle;
 
+    double pwr;
+    double time;
+
+    private Runnable autoOuttake = new Runnable(){
+
+        @Override
+        public void run() {
+            outtake(pwr, time);
+        }
+    };
+
 
 
     LinearOpMode opmode;
     ElapsedTime runtime = new ElapsedTime();
 
     private Thread turretTurn;
+    private Thread outtakeThread;
 
     public hwMap(LinearOpMode opmode) {
         this.opmode = opmode;
@@ -78,6 +90,7 @@ public class hwMap {
         imu.initialize(parameters);
 
         //turretTurn = new Thread(turningTurret);
+        outtakeThread = new Thread(autoOuttake);
 
 
         //driveTrain.srvMarker.setPosition(1);
@@ -100,6 +113,12 @@ public class hwMap {
 
     public void setThread(Runnable run){
         turretTurn = new Thread(run);
+    }
+
+    public void startOuttakeThread(double pwr, double time){
+        this.pwr = pwr;
+        this.time = time;
+        outtakeThread.start();
     }
 
     public void resetAngle() {
@@ -147,6 +166,8 @@ public class hwMap {
 
 
     }
+
+
 
     public void turnPID(double pwr, double angle, double p, double i, double d, double timeout) { //This is the good PID method use this one
         double initPos = getAngle();
