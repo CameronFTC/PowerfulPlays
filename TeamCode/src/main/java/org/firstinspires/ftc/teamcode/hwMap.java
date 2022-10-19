@@ -236,19 +236,19 @@ public class hwMap {
             rightPwr /= max;
         }
 
-        motorFL.setPower(-leftPwr);
-        motorFR.setPower(-rightPwr);
-        motorBL.setPower(-leftPwr);
-        motorBR.setPower(-rightPwr);
+        fL.setPower(-leftPwr);
+        fR.setPower(-rightPwr);
+        bL.setPower(-leftPwr);
+        bR.setPower(-rightPwr);
     }
 
     public void stopAll() {
 
         double pwr = 0;
-        motorFL.setPower(pwr);
-        motorFR.setPower(pwr);
-        motorBL.setPower(pwr);
-        motorBR.setPower(pwr);
+        fL.setPower(pwr);
+        fR.setPower(pwr);
+        bL.setPower(pwr);
+        bR.setPower(pwr);
 
     }
 
@@ -269,15 +269,15 @@ public class hwMap {
         double oldTime = currTime;
 
 
-        while (Math.abs(distance) > Math.abs(getAvgEncoder()) && !newOp.isStopRequested()) {
+        while (Math.abs(distance) > Math.abs(getAvgEncoder()) && !opmode.isStopRequested()) {
             currTime = timer.milliseconds();
 
             proportional = (distance - getAvgEncoder()) * kP;
             integral += (distance - getAvgEncoder()) * (currTime - oldTime) * kI;
-            derivative = sensors.getTrueDiff(oldGyro) * kD;
+            derivative = getAngle() - oldGyro * kD;
             power = integral + proportional + derivative;
 
-            error = sensors.getCurrGyro();
+            error = getAngle();
 
             RhAdjust = -(error * .028);
             LhAdjust = (error * .035);
@@ -295,20 +295,22 @@ public class hwMap {
             oldTime = currTime;
             straight(power, RhAdjust, LhAdjust);
 
-            newOp.telemetry.addData("Avg Encoder Val", getAvgEncoder());
-            newOp.telemetry.addData("Gyro Error", error);
-            newOp.telemetry.addData("Amount left", (distance - getAvgEncoder()));
-            newOp.telemetry.addData("Forward power", power);
-            newOp.telemetry.addData("Proportional", proportional);
-            newOp.telemetry.addData("Integral", integral);
-            newOp.telemetry.addData("Derivatve", derivative);
-            newOp.telemetry.addData("Left power: ", LhAdjust);
-            newOp.telemetry.addData("Right power: ", RhAdjust);
-            newOp.telemetry.update();
+            opmode.telemetry.addData("Avg Encoder Val", getAvgEncoder());
+            opmode.telemetry.addData("Gyro Error", error);
+            opmode.telemetry.addData("Amount left", (distance - getAvgEncoder()));
+            opmode.telemetry.addData("Forward power", power);
+            opmode.telemetry.addData("Proportional", proportional);
+            opmode.telemetry.addData("Integral", integral);
+            opmode.telemetry.addData("Derivatve", derivative);
+            opmode.telemetry.addData("Left power: ", LhAdjust);
+            opmode.telemetry.addData("Right power: ", RhAdjust);
+            opmode.telemetry.update();
 
             if (currTime > timeout) {
                 break;
             }
+
+            oldGyro = getAngle();
         }
 
 
@@ -347,4 +349,27 @@ public class hwMap {
         double totalTicks = 120;
         return ticks/totalTicks * 360;
     }
+
+    public void resetEncoders() {
+
+        fL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        opmode.idle();
+        bL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        opmode.idle();
+        fR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        opmode.idle();
+        bR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        opmode.idle();
+
+        bL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        opmode.idle();
+        bR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        opmode.idle();
+        fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        opmode.idle();
+        fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        opmode.idle();
+
+    }
+
 }
