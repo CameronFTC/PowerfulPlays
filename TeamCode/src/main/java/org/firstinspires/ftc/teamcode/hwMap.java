@@ -13,6 +13,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class hwMap {
+
+    /*
+        silly little to do list
+        -turn pid (CHECK!)
+        -go straight
+        -roadrunner
+        -intake
+        -outake
+        -move turret
+
+
+     */
     public DcMotor fL;
     public DcMotor fR;
     public DcMotor bR;
@@ -94,6 +106,18 @@ public class hwMap {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         globalAngle = 0;
+    }
+
+    public void outtake (double time, double pwr){
+        ElapsedTime timer = new ElapsedTime();
+
+        while(timer.seconds() < time){
+            roller1.setPower(pwr);
+            roller2.setPower(pwr);
+        }
+
+        roller1.setPower(0);
+        roller2.setPower(0);
     }
 
     public double getAngle() {
