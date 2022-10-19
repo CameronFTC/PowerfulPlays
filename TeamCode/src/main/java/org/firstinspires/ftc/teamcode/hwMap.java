@@ -19,9 +19,6 @@ public class hwMap {
         -turn pid (CHECK!)
         -go straight
         -roadrunner
-        -intake
-        -outake
-        -move turret
 
 
      */
@@ -45,8 +42,8 @@ public class hwMap {
     double pwr;
     double time;
 
-    private Runnable autoOuttake = new Runnable(){
-
+    private Runnable autoOuttake = new Runnable()
+    {
         @Override
         public void run() {
             outtake(pwr, time);
@@ -198,6 +195,126 @@ public class hwMap {
         bR.setPower(0);
     }
 
+    public double getAvgEncoder() {
+
+        double div = 4;
+        double avgAdd = bL.getCurrentPosition() + bR.getCurrentPosition() + fL.getCurrentPosition() + fR.getCurrentPosition();
+        double avg;
+
+        if (bL.getCurrentPosition() == 0) {
+            div--;
+        }
+
+        if (bR.getCurrentPosition() == 0) {
+            div--;
+        }
+        if (fL.getCurrentPosition() == 0) {
+            div--;
+        }
+
+        if (fR.getCurrentPosition() == 0) {
+            div--;
+        }
+
+        if (div == 0) {
+            avg = 0;
+        } else {
+            avg = avgAdd / div;
+        }
+
+        return -avg;
+    }
+
+    public void straight(double pwr, double RhAdj, double LhAdj) {
+
+        double max = Math.max(Math.abs(pwr + LhAdj), Math.abs(pwr + RhAdj));
+        double leftPwr = pwr + LhAdj;
+        double rightPwr = pwr + RhAdj;
+
+        if (max > 1) {
+            leftPwr /= max;
+            rightPwr /= max;
+        }
+
+        motorFL.setPower(-leftPwr);
+        motorFR.setPower(-rightPwr);
+        motorBL.setPower(-leftPwr);
+        motorBR.setPower(-rightPwr);
+    }
+
+    public void stopAll() {
+
+        double pwr = 0;
+        motorFL.setPower(pwr);
+        motorFR.setPower(pwr);
+        motorBL.setPower(pwr);
+        motorBR.setPower(pwr);
+
+    }
+
+    public void goStraightPID(double distance, double kP, double kI, double kD, double timeout, double max) {
+        ElapsedTime timer = new ElapsedTime();
+        resetEncoders();
+        timer.startTime();
+
+        double oldGyro = 0;
+        double power;
+        double error = 0;
+        double currTime = timer.milliseconds();
+        double LhAdjust = 0;
+        double RhAdjust = 0;
+        double integral = 0;
+        double derivative;
+        double proportional;
+        double oldTime = currTime;
+
+
+        while (Math.abs(distance) > Math.abs(getAvgEncoder()) && !newOp.isStopRequested()) {
+            currTime = timer.milliseconds();
+
+            proportional = (distance - getAvgEncoder()) * kP;
+            integral += (distance - getAvgEncoder()) * (currTime - oldTime) * kI;
+            derivative = sensors.getTrueDiff(oldGyro) * kD;
+            power = integral + proportional + derivative;
+
+            error = sensors.getCurrGyro();
+
+            RhAdjust = -(error * .028);
+            LhAdjust = (error * .035);
+
+            if(power < 0.15 && distance > 0){
+                power = 0.2;
+            }
+            if(power > -0.15 && distance < 0){
+                power = -0.2;
+            }
+
+            if(Math.abs(power) > Math.abs(max)){
+                power = max;
+            }
+            oldTime = currTime;
+            straight(power, RhAdjust, LhAdjust);
+
+            newOp.telemetry.addData("Avg Encoder Val", getAvgEncoder());
+            newOp.telemetry.addData("Gyro Error", error);
+            newOp.telemetry.addData("Amount left", (distance - getAvgEncoder()));
+            newOp.telemetry.addData("Forward power", power);
+            newOp.telemetry.addData("Proportional", proportional);
+            newOp.telemetry.addData("Integral", integral);
+            newOp.telemetry.addData("Derivatve", derivative);
+            newOp.telemetry.addData("Left power: ", LhAdjust);
+            newOp.telemetry.addData("Right power: ", RhAdjust);
+            newOp.telemetry.update();
+
+            if (currTime > timeout) {
+                break;
+            }
+        }
+
+
+        stopAll();
+    }
+
     public void turretPID(double pwr, double angle, double kp, double ki, double kd, double timeout){
         double prev = getTurretAngle(turret.getCurrentPosition());
         double current = getTurretAngle(turret.getCurrentPosition());
@@ -224,23 +341,6 @@ public class hwMap {
         }
 
         turret.setPower(0);
-    }
-
-    public void encoderMove(double speed, double target){
-        ElapsedTime runtime = new ElapsedTime();
-        double initPos = fR.getCurrentPosition();
-
-        while(opmode.opModeIsActive() && Math.abs(fR.getCurrentPosition() - initPos) < target){
-            fL.setPower(speed);
-            fR.setPower(speed);
-            bL.setPower(speed);
-            bR.setPower(speed);
-        }
-
-        fL.setPower(0);
-        fR.setPower(0);
-        bL.setPower(0);
-        bR.setPower(0);
     }
 
     public double getTurretAngle(double ticks){
