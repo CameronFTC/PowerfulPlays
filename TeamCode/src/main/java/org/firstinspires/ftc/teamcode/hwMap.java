@@ -16,8 +16,6 @@ public class hwMap {
 
     /*
         silly little to do list
-        -turn pid (CHECK!)
-        -go straight
         -roadrunner
 
 
@@ -28,6 +26,7 @@ public class hwMap {
     public DcMotor bL;
     public DcMotor turret;
     public DcMotor lift;
+    public DcMotor lift2;
 
     public CRServo roller1;
     public CRServo roller2;
@@ -38,6 +37,8 @@ public class hwMap {
     public double lastDegrees;
     public double globalAngle;
     public double referenceAngle;
+
+    public double liftEncoderGlobal;
 
     double pwr;
     double time;
@@ -67,6 +68,12 @@ public class hwMap {
 
         turret = opmode.hardwareMap.get(DcMotor.class, "turret");
         lift = opmode.hardwareMap.get(DcMotor.class, "lift");
+        lift2 = opmode.hardwareMap.get(DcMotor.class, "lift2");
+
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        liftEncoderGlobal = 0;
 
         roller1 = opmode.hardwareMap.get(CRServo.class, "roller1");
         roller2 = opmode.hardwareMap.get(CRServo.class, "roller2");
@@ -91,7 +98,6 @@ public class hwMap {
 
 
         //driveTrain.srvMarker.setPosition(1);
-
 
         opmode.telemetry.addData("Mode", "calibrating...");
         opmode.telemetry.update();

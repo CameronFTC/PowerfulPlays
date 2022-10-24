@@ -98,6 +98,9 @@ public class TFod extends LinearOpMode {
             tfod.setZoom(1.0, 16.0/9.0);
         }
 
+        hw.liftEncoderGlobal = hw.lift.getCurrentPosition();
+
+
         // Wait for the game to begin
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
@@ -169,8 +172,86 @@ public class TFod extends LinearOpMode {
      * Initialize the Vuforia localization engine.
      */
 
+     //turret - abs, break mod
+    //lift - motion profiling
 
-    //if a
+
+    //tic tac toe circut breakers
+
+    private void turret(){
+       hw.turret.setPower(gamepad2.left_stick_y);
+    }
+
+    private void lift(){
+        hw.lift.setPower(gamepad2.right_stick_y);
+        hw.lift2.setPower(gamepad2.right_stick_y);
+        double target;
+        if(gamepad2.right_stick_y > 0){
+            target = gamepad2.right_stick_y * 2940;
+            double speed = 0.0;
+            double start = hw.lift.getCurrentPosition();
+
+            while((hw.lift.getCurrentPosition() < (0.5 * target)) && speed < 0.9){
+                speed = (hw.lift.getCurrentPosition() - start) * 0.0005;
+                hw.lift.setPower(speed);
+                hw.lift2.setPower(speed);
+            }
+
+            double encoderLeft = hw.lift.getCurrentPosition() - hw.liftEncoderGlobal;
+
+            while((target - hw.lift.getCurrentPosition()) > encoderLeft){
+                speed = 0.8;
+                hw.lift.setPower(speed);
+                hw.lift2.setPower(speed);
+            }
+
+            while((hw.lift.getCurrentPosition() < (0.5 * target)) && speed > 0){
+                speed = (target - hw.lift.getCurrentPosition()) * 0.0005;
+                hw.lift.setPower(speed);
+                hw.lift2.setPower(speed);
+            }
+
+            hw.lift.setPower(0);
+            hw.lift2.setPower(0);
+
+        } else {
+            hw.lift.setPower(0);
+            hw.lift2.setPower(0);
+        }
+
+        double speed = 0;
+
+
+
+
+    }
+
+    private void intake(){
+        if(gamepad2.a) {
+            hw.roller1.setPower(1);
+            hw.roller2.setPower(1);
+
+        } else {
+            hw.roller1.setPower(0);
+            hw.roller2.setPower(0);
+        }
+    }
+
+    private void outtake(){
+
+        if(gamepad2.a) {
+            hw.roller1.setPower(-1);
+            hw.roller2.setPower(-1);
+
+        } else {
+            hw.roller1.setPower(0);
+            hw.roller2.setPower(0);
+        }
+
+    }
+
+
+
     private void theSnapper(){
         //if camera sees it
             //activate tfod, check angle and //size
