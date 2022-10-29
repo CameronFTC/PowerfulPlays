@@ -69,6 +69,8 @@ public class TFod extends LinearOpMode {
         }
     };
 
+    private double currGyro;
+
 
     @Override
     public void runOpMode() {
@@ -97,6 +99,7 @@ public class TFod extends LinearOpMode {
         }
 
         hw.liftEncoderGlobal = hw.lift.getCurrentPosition();
+        currGyro =  hw.getAngle();
 
 
         // Wait for the game to begin
@@ -329,7 +332,15 @@ public class TFod extends LinearOpMode {
         return -heading;
     }
 
+
+
     public void trigMecanum(double error) {
+
+        double gyroCorrect = (hw.getAngle() - currGyro) * 0.01;
+
+        if(Math.abs(gamepad1.right_stick_x) > 0){
+            currGyro = hw.getAngle();
+        }
 
         double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;
         double leftstickx = -gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x);
@@ -362,8 +373,8 @@ public class TFod extends LinearOpMode {
         */
 
         hw.fL.setPower(v1 + error);
-        hw.fR.setPower(-v2 + error);
+        hw.fR.setPower(-v2 + error + currGyro);
         hw.bL.setPower(-v3 + error);// * .79);
-        hw.bR.setPower(v4+ error);// * .79);
+        hw.bR.setPower(v4+ error + currGyro);// * .79);
     }
 }
