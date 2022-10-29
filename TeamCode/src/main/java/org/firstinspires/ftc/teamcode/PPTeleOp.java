@@ -2,19 +2,43 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(group = "TeleOp", name = "PPTeleOp")
 public class PPTeleOp extends LinearOpMode {
-    hwMap hw;
+    public DcMotor fL;
+    public DcMotor fR;
+    public DcMotor bR;
+    public DcMotor bL;
+
     @Override
     public void runOpMode() {
-
-        hw = new hwMap(this );
+        fL = hardwareMap.get(DcMotor.class, "fL");
+        fR = hardwareMap.get(DcMotor.class, "fR");
+        bL = hardwareMap.get(DcMotor.class, "bL");
+        bR = hardwareMap.get(DcMotor.class, "bR");
+        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         waitForStart();
         while(opModeIsActive()){
             trigMecanum();
 
-            if(gamepad1.right_trigger > 0.1){
+            /*if(Math.abs(gamepad1.right_stick_y) > 0.1){
+                fL.setPower(gamepad1.right_stick_y);
+            }
+            if(Math.abs(gamepad1.left_stick_y) > 0.1){
+                fR.setPower(gamepad1.right_stick_y);
+            }
+            if(Math.abs(gamepad1.right_stick_x) > 0.1){
+                bL.setPower(gamepad1.right_stick_y);
+            }
+            if(Math.abs(gamepad1.left_stick_x) > 0.1){
+                bR.setPower(gamepad1.right_stick_y);
+            }*/
+
+            /*if(gamepad1.right_trigger > 0.1){
                 hw.roller1.setPower(gamepad1.right_trigger);
                 hw.roller2.setPower(-gamepad1.right_trigger);
             }
@@ -25,7 +49,7 @@ public class PPTeleOp extends LinearOpMode {
             else{
                 hw.roller1.setPower(0);
                 hw.roller2.setPower(0);
-            }
+            }*/
 
         }
     }
@@ -62,10 +86,10 @@ public class PPTeleOp extends LinearOpMode {
         telemetry.update();
         */
 
-        hw.fL.setPower(-v1);
-        hw.fR.setPower(-v2);
-        hw.bL.setPower(v3);// * .79);
-        hw.bR.setPower(v4);// * .79);
+        fL.setPower(-v1);
+        fR.setPower(-v2);
+        bL.setPower(v3);// * .79);
+        bR.setPower(v4);// * .79);
 
         telemetry.addData("fl", -v1);
         telemetry.addData ("fR", -v2);
