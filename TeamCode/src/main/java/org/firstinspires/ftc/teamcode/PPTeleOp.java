@@ -66,6 +66,11 @@ public class PPTeleOp extends LinearOpMode {
         hw.fR.setPower(-v2);
         hw.bL.setPower(v3);// * .79);
         hw.bR.setPower(v4);// * .79);
+
+        telemetry.addData("fl", -v1);
+        telemetry.addData ("fR", -v2);
+        telemetry.addData ("bL", v3);
+        telemetry.addData ("bR", v4);
     }
 
 }

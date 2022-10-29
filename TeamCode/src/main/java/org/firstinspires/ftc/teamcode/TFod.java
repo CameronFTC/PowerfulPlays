@@ -15,9 +15,6 @@ import java.util.List;
 @TeleOp(name = "TFod", group = "Concept")
 public class TFod extends LinearOpMode {
 
-
-    //hello cameroon
-
     /*
      * Specify the source for the Tensor Flow Model.
      * If the TensorFlowLite object model is included in the Robot Controller App as an "asset",
@@ -28,7 +25,6 @@ public class TFod extends LinearOpMode {
     hwMap hw;
     private static final String TFOD_MODEL_ASSET = "PowerPlay.tflite";
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
-
 
     private static final String[] LABELS = {
             "1 Bolt",
@@ -48,6 +44,7 @@ public class TFod extends LinearOpMode {
      * Once you've obtained a license key, copy the string from the Vuforia web site
      * and paste it in to your code on the next line, between the double quotes.
      */
+
     private static final String VUFORIA_KEY =
             "AYJgkfL/////AAABmcsn/oH17E7rnb8XOyK+cQ9M7dpMRcwsAJNBt7Alqtqd7YIuijBbIlVZFA2yOOS95e7ZssiuuHUvDuw4W/7YfOPV6YW4gsBeuzq1/lKxn8i1PmomRFm9QrnCIoUWmvkgavhv+HGcO1om007ZIm+S62AwAmmqRrbJ8De2eOoOa1n5i2EZg2belVSaD158qE8RkJkaV9Nv38c/DyVDRsXiV6mlGU79TOAYasMix/dTA9VZuOzsaB+kUgM2bchMY8q5pEOehASGo3+P5TiYhAOsJ4SDLGnOt8JyUL1JbFyNkFjvJkna4rtCa6HkJB0DV9Nh84dZmQ8gkLAtfSqaLyY6KD32TytXC5XfFzdRhLsrVnRt";
 
@@ -55,6 +52,7 @@ public class TFod extends LinearOpMode {
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
+
     private VuforiaLocalizer vuforia;
 
     /**
@@ -144,26 +142,15 @@ public class TFod extends LinearOpMode {
                         if (updatedRecognitions.size() == 0){
                             error = 0;
                         }
+
                         trigMecanum(error);
+                        lift();
+                        rollers();
+                        turret();
+
                         telemetry.update();
                     }
                 }
-
-                //FIND CONSTANT
-
-
-//                if(Math.abs(gamepad1.left_stick_y) > 0.1){
-                    //while(Math.abs(error) > 2){
-
-
-                    //}
-//                }
-//                else{
-//                    hw.bL.setPower(0);
-//                    hw.bR.setPower(0);
-//                    hw.fL.setPower(0);
-//                    hw.fR.setPower(0);
-//                }
             }
         }
     }
@@ -171,12 +158,6 @@ public class TFod extends LinearOpMode {
     /**
      * Initialize the Vuforia localization engine.
      */
-
-     //turret - abs, break mod
-    //lift - motion profiling
-
-
-    //tic tac toe circut breakers
 
     private void turret(){
        hw.turret.setPower(gamepad2.left_stick_y);
@@ -226,8 +207,18 @@ public class TFod extends LinearOpMode {
 
     }
 
-    private void intake(){
+    public void liftOverride(){
+        hw.lift.setPower(gamepad2.left_stick_x);
+        hw.lift2.setPower(gamepad2.left_stick_x);
+
+    }
+
+    private void rollers(){
         if(gamepad2.a) {
+            hw.roller1.setPower(1);
+            hw.roller2.setPower(1);
+
+        } else if(gamepad2.b) {
             hw.roller1.setPower(1);
             hw.roller2.setPower(1);
 
@@ -236,21 +227,6 @@ public class TFod extends LinearOpMode {
             hw.roller2.setPower(0);
         }
     }
-
-    private void outtake(){
-
-        if(gamepad2.a) {
-            hw.roller1.setPower(-1);
-            hw.roller2.setPower(-1);
-
-        } else {
-            hw.roller1.setPower(0);
-            hw.roller2.setPower(0);
-        }
-
-    }
-
-
 
     private void theSnapper(){
         //if camera sees it
