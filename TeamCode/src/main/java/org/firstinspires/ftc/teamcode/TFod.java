@@ -208,8 +208,8 @@ public class TFod extends LinearOpMode {
     }
 
     public void liftOverride(){
-        hw.lift.setPower(gamepad2.left_stick_x);
-        hw.lift2.setPower(gamepad2.left_stick_x);
+        hw.lift.setPower(gamepad2.right_stick_y);
+        hw.lift2.setPower(gamepad2.right_stick_y);
 
     }
 
