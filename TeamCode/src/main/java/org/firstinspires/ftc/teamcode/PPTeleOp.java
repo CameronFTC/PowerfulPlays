@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -17,6 +19,13 @@ public class PPTeleOp extends LinearOpMode {
     public DcMotor fR;
     public DcMotor bR;
     public DcMotor bL;
+    public DcMotor turret;
+    public DcMotor lift;
+    public DcMotor lift2;
+    public Servo arm1;
+    public Servo arm2;
+    public CRServo roller1;
+    public CRServo roller2;
 
     public BNO055IMU imu;
     public Orientation lastAngles = new Orientation();
@@ -32,6 +41,13 @@ public class PPTeleOp extends LinearOpMode {
         fR = hardwareMap.get(DcMotor.class, "fR");
         bL = hardwareMap.get(DcMotor.class, "bL");
         bR = hardwareMap.get(DcMotor.class, "bR");
+        turret = hardwareMap.get(DcMotor.class, "turret");
+        //lift = hardwareMap.get(DcMotor.class, "lift");
+        //lift2 = hardwareMap.get(DcMotor.class, "lift2");
+        arm1 = hardwareMap.get(Servo.class, "arm1");
+        arm2 = hardwareMap.get(Servo.class, "arm2");
+        roller1 = hardwareMap.get(CRServo.class, "roller1");
+        roller2 = hardwareMap.get(CRServo.class, "roller2");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
         parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -64,6 +80,10 @@ public class PPTeleOp extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()){
             trigMecanum();
+            turret();
+            rollers();
+            arms();
+            //lift();
 
             /*if(Math.abs(gamepad1.right_stick_y) > 0.1){
                 fL.setPower(gamepad1.right_stick_y);
@@ -115,6 +135,66 @@ public class PPTeleOp extends LinearOpMode {
 
         return -globalAngle;
     }
+
+    private void turret(){
+        turret.setPower(gamepad2.left_stick_x);
+    }
+
+    private void arms(){
+        if(gamepad2.a)
+            arm1.setPosition(0.7);
+    }
+
+    private void rollers(){
+        if(gamepad2.right_trigger > 0.1){
+            roller1.setPower(gamepad2.right_trigger);
+            roller2.setPower(-gamepad2.right_trigger);
+        }
+        else if(gamepad2.left_trigger > 0.1){
+            roller1.setPower(-gamepad2.right_trigger);
+            roller2.setPower(gamepad2.right_trigger);
+        }
+    }
+
+    /*private void lift(){
+        lift.setPower(gamepad2.right_stick_y);
+        lift2.setPower(gamepad2.right_stick_y);
+        double target;
+        if(gamepad2.right_stick_y > 0){
+            target = gamepad2.right_stick_y * 2940;
+            double speed = 0.0;
+            double start = lift.getCurrentPosition();
+
+            while((lift.getCurrentPosition() < (0.5 * target)) && speed < 0.9){
+                speed = (lift.getCurrentPosition() - start) * 0.0005;
+                lift.setPower(speed);
+                lift2.setPower(speed);
+            }
+
+            double encoderLeft = lift.getCurrentPosition();
+
+            while((target - lift.getCurrentPosition()) > encoderLeft){
+                speed = 0.8;
+                lift.setPower(speed);
+                lift2.setPower(speed);
+            }
+
+            while((lift.getCurrentPosition() < (0.5 * target)) && speed > 0){
+                speed = (target - lift.getCurrentPosition()) * 0.0005;
+                lift.setPower(speed);
+                lift2.setPower(speed);
+            }
+
+            lift.setPower(0);
+            lift2.setPower(0);
+
+        } else {
+            lift.setPower(0);
+            lift2.setPower(0);
+        }
+
+        double speed = 0;
+    }*/
 
     public void trigMecanum() {
         double gyroCorrect = (getAngle() - currGyro) * 0.01;
