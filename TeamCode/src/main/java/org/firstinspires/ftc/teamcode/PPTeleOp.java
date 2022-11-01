@@ -58,12 +58,13 @@ public class PPTeleOp extends LinearOpMode {
         imu = this.hardwareMap.get(BNO055IMU.class, "imu");
 
         imu.initialize(parameters);
-        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         bL.setDirection(DcMotorSimple.Direction.REVERSE);
         fL.setDirection(DcMotorSimple.Direction.REVERSE);
+
         this.telemetry.addData("Mode", "calibrating...");
         this.telemetry.update();
 
@@ -154,6 +155,10 @@ public class PPTeleOp extends LinearOpMode {
             roller1.setPower(-gamepad2.right_trigger);
             roller2.setPower(gamepad2.right_trigger);
         }
+        else{
+            roller1.setPower(0);
+            roller2.setPower(0);
+        }
     }
 
     /*private void lift(){
@@ -197,13 +202,13 @@ public class PPTeleOp extends LinearOpMode {
     }*/
 
     public void trigMecanum() {
-        double gyroCorrect = (getAngle() - currGyro) * 0.01;
+        double gyroCorrect = (getAngle() - currGyro) * 0.008;
 
         if(Math.abs(gamepad1.right_stick_x) > 0){
             currGyro = getAngle();
         }
 
-        double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;
+        double rightstickx = Math.abs(gamepad1.right_stick_x) * gamepad1.right_stick_x ;
         double leftstickx = -gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x);
 
         double leftstickyfront = Math.abs(gamepad1.left_stick_y) * gamepad1.left_stick_y ;
@@ -233,15 +238,21 @@ public class PPTeleOp extends LinearOpMode {
         telemetry.update();
         */
 
-        fL.setPower(-v1);
-        fR.setPower(-v2 + currGyro);
-        bL.setPower(v3);// * .79);
-        bR.setPower(v4 + currGyro);// * .79);
+        //fL.setPower(-v1 + gyroCorrect);
+        fL.setPower(-v1 + gyroCorrect);
+        fR.setPower(-v2);
+        //bL.setPower(v3 + gyroCorrect);// * .79);
+        bL.setPower(v3 + gyroCorrect);
+        bR.setPower(v4);// * .79);
 
-        telemetry.addData("fl", -v1);
+        telemetry.addData("fl", -v1 + gyroCorrect);
         telemetry.addData ("fR", -v2);
         telemetry.addData ("bL", v3);
         telemetry.addData ("bR", v4);
+
+        telemetry.addData("curr Gyro correct", gyroCorrect);
+
+        telemetry.update();
     }
 
 }
