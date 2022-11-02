@@ -58,6 +58,7 @@ public class hwMap {
 
     private Thread turretTurn;
     private Thread outtakeThread;
+    private Thread liftThread;
 
     public hwMap(LinearOpMode opmode) {
         this.opmode = opmode;
@@ -114,8 +115,9 @@ public class hwMap {
 
     }
 
-    public void setThread(Runnable run){
+    public void setThread(Runnable run, Runnable run2){
         turretTurn = new Thread(run);
+        liftThread = new Thread(run2);
     }
 
     public void startOuttakeThread(double pwr, double time){

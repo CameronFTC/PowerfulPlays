@@ -69,13 +69,20 @@ public class TFod extends LinearOpMode {
         }
     };
 
+    private Runnable liftUp = new Runnable() {
+        @Override
+        public void run() {
+            lift();
+        }
+    };
+
     private double currGyro;
 
 
     @Override
     public void runOpMode() {
         hw = new hwMap(this);
-        hw.setThread(turretTurn);
+        hw.setThread(turretTurn, liftUp);
 
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
