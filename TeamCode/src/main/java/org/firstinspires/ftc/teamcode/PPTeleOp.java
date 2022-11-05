@@ -218,10 +218,12 @@ public class PPTeleOp extends LinearOpMode {
         bL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - (Math.PI)/4) + gyroCorrect);
         bR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + (Math.PI)/4));*/
 
-        fL.setPower(gamepad1.left_stick_y + gamepad1.right_stick_x - gamepad1.left_stick_x + gyroCorrect);
-        fR.setPower(gamepad1.left_stick_y + gamepad1.right_stick_x + gamepad1.left_stick_x + gyroCorrect);
-        bL.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x - gamepad1.left_stick_x + gyroCorrect);
-        bR.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x + gamepad1.left_stick_x + gyroCorrect);
+        fL.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x );
+        fR.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x);
+        bL.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x);
+        bR.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x);
+
+
 
 
 

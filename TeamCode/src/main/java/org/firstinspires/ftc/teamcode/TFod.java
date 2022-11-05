@@ -354,11 +354,10 @@ public class TFod extends LinearOpMode {
             currGyro = hw.getAngle();
         } */
 
-        hw.fL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + Math.PI/4));
-        hw.fR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - Math.PI/4));
-        hw.bL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - (Math.PI)/4));
-        hw.bR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + (Math.PI)/4));
-
+        hw.fL.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x );
+        hw.fR.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x);
+        hw.bL.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x);
+        hw.bR.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x);
 
         /*double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;
         double leftstickx = -gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x);
