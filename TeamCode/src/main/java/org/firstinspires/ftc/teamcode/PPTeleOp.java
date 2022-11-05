@@ -202,19 +202,29 @@ public class PPTeleOp extends LinearOpMode {
     }*/
 
     public void trigMecanum() {
-        /*double gyroCorrect = (getAngle() - currGyro) * 0.008;
+        double gyroCorrect = (getAngle() - currGyro) * 0.008;
 
         if(Math.abs(gamepad1.right_stick_x) > 0){
             currGyro = getAngle();
         }
 
-        */
+
         telemetry.addLine("YOURE USING ANDERS' and anjali's PPTELEOP");
         telemetry.update();
-        fL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + Math.PI/4));
+
+        //(Math.sqrt(Math.pow(gamepad1.left_stick_x, 2)+ Math.pow(gamepad1.left_stick_y, 2)))*
+        /*fL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + Math.PI/4) + gyroCorrect);
         fR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - Math.PI/4));
-        bL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - (Math.PI)/4));
-        bR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + (Math.PI)/4));
+        bL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - (Math.PI)/4) + gyroCorrect);
+        bR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + (Math.PI)/4));*/
+
+        fL.setPower(gamepad1.left_stick_y + gamepad1.right_stick_x - gamepad1.left_stick_x + gyroCorrect);
+        fR.setPower(gamepad1.left_stick_y + gamepad1.right_stick_x + gamepad1.left_stick_x + gyroCorrect);
+        bL.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x - gamepad1.left_stick_x + gyroCorrect);
+        bR.setPower(gamepad1.left_stick_y - gamepad1.right_stick_x + gamepad1.left_stick_x + gyroCorrect);
+
+
+
 
         /*if(gamepad1.dpad_up){
             fL.setPower(gamepad1.left_stick_y); //bR moved going backwards 0
