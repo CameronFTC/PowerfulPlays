@@ -202,12 +202,28 @@ public class PPTeleOp extends LinearOpMode {
     }*/
 
     public void trigMecanum() {
-        double gyroCorrect = (getAngle() - currGyro) * 0.008;
+        /*double gyroCorrect = (getAngle() - currGyro) * 0.008;
 
         if(Math.abs(gamepad1.right_stick_x) > 0){
             currGyro = getAngle();
         }
 
+        */
+        telemetry.addLine("YOURE USING ANDERS'S PPTELEOP");
+        telemetry.update();
+        fL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + Math.PI/4));
+        fR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - Math.PI/4));
+        bL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - (Math.PI)/4));
+        bR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + (Math.PI)/4));
+
+
+
+
+
+
+
+
+        /*
         double rightstickx = Math.abs(gamepad1.right_stick_x) * gamepad1.right_stick_x ;
         double leftstickx = -gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x);
 
@@ -225,7 +241,15 @@ public class PPTeleOp extends LinearOpMode {
         final double v1 = rFront * Math.cos(robotAngleFront) + rightX;
         final double v2 = rFront * Math.sin(robotAngleFront) - rightX;
         final double v3 = rBack * Math.sin(robotAngleBack) + rightX;
-        final double v4 = rBack * Math.cos(robotAngleBack) - rightX;
+        final double v4 = rBack * Math.cos(robotAngleBack) - rightX; */
+
+
+
+
+
+
+
+
 
         /*
         telemetry.addData("fl", v1);
@@ -239,7 +263,7 @@ public class PPTeleOp extends LinearOpMode {
         */
 
         //fL.setPower(-v1 + gyroCorrect);
-        fL.setPower(-v1 + gyroCorrect);
+       /* fL.setPower(-v1 + gyroCorrect);
         fR.setPower(-v2);
         //bL.setPower(v3 + gyroCorrect);// * .79);
         bL.setPower(v3 + gyroCorrect);
@@ -252,7 +276,7 @@ public class PPTeleOp extends LinearOpMode {
 
         telemetry.addData("curr Gyro correct", gyroCorrect);
 
-        telemetry.update();
+        telemetry.update(); */
     }
 
 }

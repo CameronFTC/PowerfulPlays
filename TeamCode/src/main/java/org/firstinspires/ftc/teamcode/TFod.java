@@ -343,13 +343,19 @@ public class TFod extends LinearOpMode {
 
     public void trigMecanum(double error) {
 
-        double gyroCorrect = (hw.getAngle() - currGyro) * 0.01;
+        /*double gyroCorrect = (hw.getAngle() - currGyro) * 0.01;
 
         if(Math.abs(gamepad1.right_stick_x) > 0){
             currGyro = hw.getAngle();
-        }
+        } */
 
-        double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;
+        hw.fL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + Math.PI/4));
+        hw.fR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - Math.PI/4));
+        hw.bL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - (Math.PI)/4));
+        hw.bR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + (Math.PI)/4));
+
+
+        /*double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;
         double leftstickx = -gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x);
 
         double leftstickyfront = Math.abs(gamepad1.left_stick_y) * gamepad1.left_stick_y ;
@@ -366,7 +372,7 @@ public class TFod extends LinearOpMode {
         final double v1 = rFront * Math.cos(robotAngleFront) + rightX;
         final double v2 = rFront * Math.sin(robotAngleFront) - rightX;
         final double v3 = rBack * Math.sin(robotAngleBack) + rightX;
-        final double v4 = rBack * Math.cos(robotAngleBack) - rightX;
+        final double v4 = rBack * Math.cos(robotAngleBack) - rightX; */
 
         /*
         telemetry.addData("fl", v1);
@@ -379,9 +385,9 @@ public class TFod extends LinearOpMode {
         telemetry.update();
         */
 
-        hw.fL.setPower(v1 + error);
-        hw.fR.setPower(-v2 + error + currGyro);
-        hw.bL.setPower(-v3 + error);// * .79);
-        hw.bR.setPower(v4+ error + currGyro);// * .79);
+        //hw.fL.setPower(v1 + error);
+        //hw.fR.setPower(-v2 + error + currGyro);
+        //hw.bL.setPower(-v3 + error);// * .79);
+        //hw.bR.setPower(v4+ error + currGyro);// * .79);
     }
 }
