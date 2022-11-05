@@ -22,8 +22,8 @@ public class PPTeleOp extends LinearOpMode {
     public DcMotor turret;
     public DcMotor lift;
     public DcMotor lift2;
-    public Servo arm1;
-    public Servo arm2;
+    public CRServo arm1;
+    public CRServo arm2;
     public CRServo roller1;
     public CRServo roller2;
 
@@ -44,8 +44,8 @@ public class PPTeleOp extends LinearOpMode {
         turret = hardwareMap.get(DcMotor.class, "turret");
         //lift = hardwareMap.get(DcMotor.class, "lift");
         //lift2 = hardwareMap.get(DcMotor.class, "lift2");
-        arm1 = hardwareMap.get(Servo.class, "arm1");
-        arm2 = hardwareMap.get(Servo.class, "arm2");
+        arm1 = hardwareMap.get(CRServo.class, "arm1");
+        arm2 = hardwareMap.get(CRServo.class, "arm2");
         roller1 = hardwareMap.get(CRServo.class, "roller1");
         roller2 = hardwareMap.get(CRServo.class, "roller2");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -143,7 +143,7 @@ public class PPTeleOp extends LinearOpMode {
 
     private void arms(){
         if(gamepad2.a)
-            arm1.setPosition(0.7);
+            arm1.setPower(0.7);
     }
 
     private void rollers(){
