@@ -156,7 +156,7 @@ public class TFod extends LinearOpMode {
                         trigMecanum(error);
                         lift();
                         rollers();
-                        turret();
+                        turret(error);
 
                         telemetry.update();
                     }
@@ -169,8 +169,13 @@ public class TFod extends LinearOpMode {
      * Initialize the Vuforia localization engine.
      */
 
-    private void turret(){
-       hw.turret.setPower(gamepad2.left_stick_y);
+    private void turret(double error){
+        if(gamepad2.b) {
+            hw.turret.setPower(error);
+        } else {
+            hw.turret.setPower(gamepad2.right_stick_y);
+        }
+
     }
 
     private void lift(){
