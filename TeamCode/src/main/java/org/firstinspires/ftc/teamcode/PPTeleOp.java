@@ -209,18 +209,28 @@ public class PPTeleOp extends LinearOpMode {
         }
 
         */
-        telemetry.addLine("YOURE USING ANDERS'S PPTELEOP");
+        telemetry.addLine("YOURE USING ANDERS' and anjali's PPTELEOP");
         telemetry.update();
         fL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + Math.PI/4));
         fR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - Math.PI/4));
         bL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - (Math.PI)/4));
         bR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + (Math.PI)/4));
 
+        /*if(gamepad1.dpad_up){
+            fL.setPower(gamepad1.left_stick_y); //bR moved going backwards 0
+        }
 
+        if(gamepad1.dpad_down){
+            fR.setPower(gamepad1.left_stick_y); //fR moved going forward 2
+        }
 
+        if(gamepad1.dpad_left){
+            bL.setPower(gamepad1.left_stick_y); //bL moved going forward 1
+        }
 
-
-
+        if(gamepad1.dpad_right){
+            bR.setPower(gamepad1.left_stick_y); //fL moved going backwards 3
+        }*/
 
 
         /*
