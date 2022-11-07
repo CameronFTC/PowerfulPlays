@@ -156,6 +156,7 @@ public class TFod extends LinearOpMode {
                         trigMecanum(error);
                         lift();
                         rollers();
+                        arms();
                         turret(error);
 
                         telemetry.update();
@@ -178,11 +179,28 @@ public class TFod extends LinearOpMode {
 
     }
 
+    private void arms() {
+        if (gamepad2.a) {
+            hw.arm1.setPower(1);
+            hw.arm2.setPower(-1);
+        }
+        else if (gamepad2.b) {
+            hw.arm1.setPower(-.4);
+            hw.arm2.setPower(.4);
+        }
+        else{
+            hw.arm1.setPower(0);
+            hw.arm2.setPower(0);
+        }
+    }
+
     private void lift(){
+        telemetry.addLine("lift is working!!!!!! woo hoo");
         hw.lift.setPower(gamepad2.right_stick_y);
-        hw.lift2.setPower(gamepad2.right_stick_y);
+        telemetry.addData("", gamepad2.right_stick_y);
+        hw.lift2.setPower(gamepad2.left_stick_y);
         double target;
-        if(gamepad2.right_stick_y > 0){
+        /*if(gamepad2.right_stick_y > 0){
             target = gamepad2.right_stick_y * 2940;
             double speed = 0.0;
             double start = hw.lift.getCurrentPosition();
@@ -216,7 +234,7 @@ public class TFod extends LinearOpMode {
         }
 
         double speed = 0;
-
+*/
 
 
 
@@ -229,18 +247,8 @@ public class TFod extends LinearOpMode {
     }
 
     private void rollers(){
-        if(gamepad2.a) {
-            hw.roller1.setPower(1);
-            hw.roller2.setPower(1);
-
-        } else if(gamepad2.b) {
-            hw.roller1.setPower(1);
-            hw.roller2.setPower(1);
-
-        } else {
-            hw.roller1.setPower(0);
-            hw.roller2.setPower(0);
-        }
+            hw.roller1.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
+            hw.roller2.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
     }
 
     private void theSnapper(){
@@ -348,15 +356,15 @@ public class TFod extends LinearOpMode {
 
     public void trigMecanum(double error) {
 
-        /*double gyroCorrect = (hw.getAngle() - currGyro) * 0.01;
+        double gyroCorrect = (hw.getAngle() - currGyro) * 0.01;
 
         if(Math.abs(gamepad1.right_stick_x) > 0){
             currGyro = hw.getAngle();
-        } */
+        }
 
-        hw.fL.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x );
+        hw.fL.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x + gyroCorrect);
         hw.fR.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x);
-        hw.bL.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x);
+        hw.bL.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x + gyroCorrect);
         hw.bR.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x);
 
         /*double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;

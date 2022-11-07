@@ -141,9 +141,24 @@ public class PPTeleOp extends LinearOpMode {
         turret.setPower(gamepad2.left_stick_x);
     }
 
-    private void arms(){
-        if(gamepad2.a)
-            arm1.setPower(0.7);
+    private void arms() {
+        if (gamepad2.a) {
+            arm1.setPower(1);
+            arm2.setPower(-1);
+        }
+        if(gamepad2.b){
+            arm1.setPower(-1);
+            arm2.setPower(1);
+        }
+        else{
+            telemetry.addLine("HAHAHAHAHAHAHAHAHAHAHAHAHAHAH");
+            arm1.setPower(0);
+            arm2.setPower(0);
+        }
+    }
+    private void arms2(){
+        if(gamepad2.b)
+            arm2.setPower(1);
     }
 
     private void rollers(){
@@ -161,10 +176,10 @@ public class PPTeleOp extends LinearOpMode {
         }
     }
 
-    /*private void lift(){
+    private void lift() {
         lift.setPower(gamepad2.right_stick_y);
         lift2.setPower(gamepad2.right_stick_y);
-        double target;
+        /*double target;
         if(gamepad2.right_stick_y > 0){
             target = gamepad2.right_stick_y * 2940;
             double speed = 0.0;
@@ -199,7 +214,8 @@ public class PPTeleOp extends LinearOpMode {
         }
 
         double speed = 0;
-    }*/
+    */
+    }
 
     public void trigMecanum() {
         double gyroCorrect = (getAngle() - currGyro) * 0.008;
@@ -218,9 +234,9 @@ public class PPTeleOp extends LinearOpMode {
         bL.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) - (Math.PI)/4) + gyroCorrect);
         bR.setPower(Math.sin(Math.atan(gamepad1.left_stick_y/gamepad1.left_stick_x) + (Math.PI)/4));*/
 
-        fL.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x );
+        fL.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x + gyroCorrect);
         fR.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x);
-        bL.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x);
+        bL.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x + gyroCorrect);
         bR.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x);
 
 

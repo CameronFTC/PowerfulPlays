@@ -20,14 +20,16 @@ public class hwMap {
 
 
      */
-    public DcMotor fL;
-    public DcMotor fR;
     public DcMotor bR;
+    public DcMotor fR;
+    public DcMotor fL;
     public DcMotor bL;
     public DcMotor turret;
     public DcMotor lift;
     public DcMotor lift2;
 
+    public CRServo arm1;
+    public CRServo arm2;
     public CRServo roller1;
     public CRServo roller2;
 
@@ -66,6 +68,8 @@ public class hwMap {
         fR = opmode.hardwareMap.get(DcMotor.class, "fR");
         bL = opmode.hardwareMap.get(DcMotor.class, "bL");
         bR = opmode.hardwareMap.get(DcMotor.class, "bR");
+        arm1 = opmode.hardwareMap.get(CRServo.class, "arm1");
+        arm2 = opmode.hardwareMap.get(CRServo.class, "arm2");
 
         turret = opmode.hardwareMap.get(DcMotor.class, "turret");
         lift = opmode.hardwareMap.get(DcMotor.class, "lift");
@@ -84,6 +88,9 @@ public class hwMap {
         bL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        bL.setDirection(DcMotorSimple.Direction.REVERSE);
+        fL.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         parameters.mode = BNO055IMU.SensorMode.IMU;
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -119,6 +126,7 @@ public class hwMap {
         turretTurn = new Thread(run);
         liftThread = new Thread(run2);
     }
+
 
     public void startOuttakeThread(double pwr, double time){
         this.pwr = pwr;
