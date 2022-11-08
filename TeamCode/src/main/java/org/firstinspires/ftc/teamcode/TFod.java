@@ -65,7 +65,7 @@ public class TFod extends LinearOpMode {
         @Override
         public void run() {
             theSnapper();
-            hw.drop();
+            //hw.drop();
         }
     };
 
