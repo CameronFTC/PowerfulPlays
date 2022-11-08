@@ -154,7 +154,10 @@ public class TFod extends LinearOpMode {
                         }
 
                         trigMecanum(error);
-                        lift();
+                        if(Math.abs(gamepad2.right_stick_y) > 0.1){
+                            hw.lift.setPower(gamepad2.right_stick_y);
+                            hw.lift2.setPower(gamepad2.right_stick_y);
+                        }
                         rollers();
                         arms();
                         turret(error);
