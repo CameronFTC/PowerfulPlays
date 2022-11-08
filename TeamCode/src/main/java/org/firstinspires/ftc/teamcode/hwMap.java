@@ -87,6 +87,10 @@ public class hwMap {
         fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        fL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         bL.setDirection(DcMotorSimple.Direction.REVERSE);
         fL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -135,7 +139,7 @@ public class hwMap {
     }
 
     public void resetAngle() {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
 
         globalAngle = 0;
     }
@@ -158,7 +162,7 @@ public class hwMap {
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
 
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
 
@@ -183,6 +187,7 @@ public class hwMap {
 
 
     public void turnPID(double pwr, double angle, double p, double i, double d, double timeout) { //This is the good PID method use this one
+        resetAngle();
         double initPos = getAngle();
         ElapsedTime runtime = new ElapsedTime();
         double integral = 0;
@@ -205,6 +210,67 @@ public class hwMap {
             initPos = getAngle();
         }
 
+        fL.setPower(0);
+        fR.setPower(0);
+        bL.setPower(0);
+        bR.setPower(0);
+    }
+
+    public void turnPID3(double pwr, double angle, double p, double i, double d, double timeout) { //This is the good PID method use this one
+        runtime.reset();
+        resetAngle();
+        double kP = Math.abs(p);
+        double kD = d;
+        double kI = i;
+        double currentTime = runtime.milliseconds();
+        double pastTime = 0;
+        startPos = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
+        double target = (angle + startPos.firstAngle);
+        double prevError = target - getAngle();
+        double error = prevError;
+        double power;
+        double proportional;
+        double integral = 0;
+        double derivative;
+        while (Math.abs(error) > 0.5 && runtime.milliseconds() < timeout && opmode.opModeIsActive()) {
+            pastTime = currentTime;
+            currentTime = runtime.milliseconds();
+            double dT = currentTime - pastTime;
+            prevError = error;
+            error = target - getAngle();
+            proportional = error * kP;
+            integral += dT * (error - prevError) * kI;
+            derivative = (error - prevError) / dT * kD;
+            power = (proportional + integral + derivative);
+
+            if (power < 0) {
+                fL.setPower((power) * pwr);
+                bL.setPower((power) * pwr);
+                fR.setPower((-1 * (power)) * pwr);
+                bR.setPower((-1 * (power)) * pwr);
+
+            } else {
+                fL.setPower((power) * pwr);
+                bL.setPower((power) * pwr);
+                fR.setPower((-1 * (power)) * pwr);
+                bR.setPower((-1 * (power)) * pwr);
+            }
+
+
+            opmode.telemetry.addData("Error: ", error);
+            opmode.telemetry.addData("angle: ", getAngle());
+            opmode.telemetry.addData("P", (error * kP));
+            opmode.telemetry.addData("I", (integral * kI));
+            opmode.telemetry.addData("integral", integral);
+            opmode.telemetry.addData("D", ((Math.abs(error) - Math.abs(prevError)) / dT * kD));
+            opmode.telemetry.update();
+
+
+        }
+        error = target - getAngle();
+        opmode.telemetry.addData("Error: ", error);
+
+        opmode.telemetry.update();
         fL.setPower(0);
         fR.setPower(0);
         bL.setPower(0);
