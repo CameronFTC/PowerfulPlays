@@ -75,8 +75,8 @@ public class hwMap {
         lift = opmode.hardwareMap.get(DcMotor.class, "lift");
         lift2 = opmode.hardwareMap.get(DcMotor.class, "lift2");
 
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         liftEncoderGlobal = 0;
 
@@ -177,13 +177,6 @@ public class hwMap {
 
         return -globalAngle;
     }
-
-    public void drop(){
-
-
-
-    }
-
 
 
     public void turnPID(double pwr, double angle, double p, double i, double d, double timeout) { //This is the good PID method use this one
