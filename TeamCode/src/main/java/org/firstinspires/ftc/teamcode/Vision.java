@@ -29,11 +29,6 @@ public class Vision {
 
     private VuforiaLocalizer vuforia;
 
-    private final int RED_THRESHOLD = 100;
-    private final int GREEN_MIN = 50;
-    private final int GREEN_MAX = 230;
-    private final int BLUE_THRESHOLD = 50;
-
     public Vision(LinearOpMode opMode) {
         this.opMode = opMode;
 
@@ -94,6 +89,8 @@ public class Vision {
 
         //top left = (0,0
         //loops through each pixel, gets the rgb values
+
+        //CHANGE LOOP TO ONLY LOOK THROUGH WHERE SIGNAL SLEEVE IS
         for (int rowNum = 0; rowNum < bitmap.getWidth(); rowNum ++) {
 
             for (int colNum = 0; colNum < bitmap.getHeight(); colNum ++) {
@@ -103,9 +100,17 @@ public class Vision {
                 int bluePixel = blue(pixel);
                 int redPixel = red(pixel);
 
-                if ((redPixel >= RED_THRESHOLD) && (greenPixel >= GREEN_MIN) && (greenPixel <= GREEN_MAX) && (bluePixel <= BLUE_THRESHOLD)) {
+                if ((redPixel > 100) && (redPixel > greenPixel) && (redPixel > bluePixel)) {
                     //if the pixel is colored within the color range we set, save its y value
-                    xValues.add(rowNum);
+                    xValues.add(1);
+
+                } else if ((bluePixel > 100) && (bluePixel > greenPixel) && (bluePixel > redPixel)) {
+                    //if the pixel is colored within the color range we set, save its y value
+                    xValues.add(2);
+
+                } else if ((greenPixel > 100) && (greenPixel > bluePixel) && (greenPixel > redPixel)) {
+                    //if the pixel is colored within the color range we set, save its y value
+                    xValues.add(3);
 
                 }
 
@@ -129,23 +134,29 @@ public class Vision {
 
         }
 
-        opMode.telemetry.addData("avgX = ", avgX);
+        opMode.telemetry.addData("situation = ", avgX);
         opMode.telemetry.update();
         opMode.sleep(1000);
 
         //checks the average y position and different positions correspond to different set ups
 
-        if (xValues.size() == 0) {
-            return "posC";
+        avgX = Math.round(avgX);
+
+        if (avgX == 3.0) {
+            return "blue";
 
         }
-        else if (avgX < 300) {
-            return "posA";
+        else if (avgX == 2.0) {
+            return "green";
 
         }
-        else {
-            return "posB";
+        else if (avgX == 1.0){
+            return "red";
 
+        }
+        else{
+            opMode.telemetry.addLine("avgX not found correctly");
+            return "red";
         }
 
     }
