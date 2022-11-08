@@ -174,13 +174,6 @@ public class hwMap {
         return -globalAngle;
     }
 
-    public void drop(){
-
-
-
-    }
-
-
 
     public void turnPID(double pwr, double angle, double p, double i, double d, double timeout) { //This is the good PID method use this one
         double initPos = getAngle();
