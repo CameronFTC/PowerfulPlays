@@ -72,7 +72,7 @@ public class TFod extends LinearOpMode {
     private Runnable liftUp = new Runnable() {
         @Override
         public void run() {
-            lift();
+            //lift();
         }
     };
 
@@ -154,10 +154,7 @@ public class TFod extends LinearOpMode {
                         }
 
                         trigMecanum(error);
-                        if(Math.abs(gamepad2.right_stick_y) > 0.1){
-                            hw.lift.setPower(gamepad2.right_stick_y);
-                            hw.lift2.setPower(gamepad2.right_stick_y);
-                        }
+                        liftNow();
                         rollers();
                         arms();
                         turret(error);
@@ -177,7 +174,7 @@ public class TFod extends LinearOpMode {
         if(gamepad2.b) {
             hw.turret.setPower(error);
         } else {
-            hw.turret.setPower(gamepad2.right_stick_y);
+            hw.turret.setPower(0);
         }
 
     }
@@ -197,11 +194,14 @@ public class TFod extends LinearOpMode {
         }
     }
 
-    private void lift(){
+    private void liftNow(){
         telemetry.addLine("lift is working!!!!!! woo hoo");
         hw.lift.setPower(gamepad2.right_stick_y);
         telemetry.addData("", gamepad2.right_stick_y);
+        telemetry.addData("", gamepad2.left_stick_y);
         hw.lift2.setPower(gamepad2.left_stick_y);
+
+        //hw.lift.setPower(0.5);
         double target;
         /*if(gamepad2.right_stick_y > 0){
             target = gamepad2.right_stick_y * 2940;
@@ -240,12 +240,6 @@ public class TFod extends LinearOpMode {
 */
 
 
-
-    }
-
-    public void liftOverride(){
-        hw.lift.setPower(gamepad2.right_stick_y);
-        hw.lift2.setPower(gamepad2.right_stick_y);
 
     }
 

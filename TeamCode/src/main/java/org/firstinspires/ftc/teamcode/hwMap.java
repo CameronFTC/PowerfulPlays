@@ -75,8 +75,8 @@ public class hwMap {
         lift = opmode.hardwareMap.get(DcMotor.class, "lift");
         lift2 = opmode.hardwareMap.get(DcMotor.class, "lift2");
 
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         liftEncoderGlobal = 0;
 
