@@ -11,10 +11,42 @@ public class RedParkAuto extends LinearOpMode {
         waitForStart();
 
         int pos = 0;
+
+        Vision vision = new Vision(this);
+
+        String parkDist = "red";
+
+        while (!(isStarted() || isStopRequested())) {
+
+            //SAMPLE HERE
+            parkDist = vision.sample();
+
+            telemetry.addData("Position", parkDist);
+            telemetry.addData("Position", "Inside of Left Wheel on right side of tile line");
+
+            telemetry.update();
+
+            idle();
+        }
+
+        int position = 2400;
+
+        switch (parkDist) {
+            case "red":
+                position = 570;
+                break;
+            case "green":
+                position = 1420;
+                break;
+            case "blue":
+                position = 2470;
+                break;
+        }
         //Vision
 
         hw.turnPID(0.7, 0, 0.7 / 30, 0.00000148148, 0.000038, 2);
         hw.goStraightPID(600, 0.0045, 0.0000023, 0.05, 2000, 0.6);
+
         if(pos == 2){
             hw.turnPID(0.7, -90, 0.7 / 90, 0.00000148148, 0.000038, 2);
             hw.goStraightPID(600, 0.0045, 0.0000023, 0.05, 2000, 0.6);

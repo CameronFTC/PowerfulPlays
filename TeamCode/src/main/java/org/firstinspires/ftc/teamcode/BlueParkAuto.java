@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class BlueParkAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-          hwMap robot = new hwMap(this);
+          hwMap hw = new hwMap(this);
           Vision vision = new Vision(this);
 
           String parkDist = "red";
@@ -38,7 +38,9 @@ public class BlueParkAuto extends LinearOpMode {
             switch (parkDist) {
                 case "red":
                     position = 570;
+                    hw.turnPID3(0.7, 90, 0.7 / 90, 0.00000148148, 0.000038, 4000);
                     break;
+
                 case "green":
                     position = 1420;
                     break;
@@ -48,7 +50,5 @@ public class BlueParkAuto extends LinearOpMode {
             }
 
         }
-        hwMap hw = new hwMap(this);
-        waitForStart();
-        hw.turnPID3(0.7, 90, 0.7 / 90, 0.00000148148, 0.000038, 4000);
+
     }
