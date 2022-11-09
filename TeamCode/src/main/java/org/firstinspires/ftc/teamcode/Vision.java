@@ -81,16 +81,20 @@ public class Vision {
     //the sample method is used to find the location of the block
     public String sample() throws InterruptedException{
         Bitmap bitmap = getBitmap();
-        ArrayList<Integer> xValues = new ArrayList<>();
-
         opMode.telemetry.addData("height", bitmap.getHeight());
 
-        int avgX = 0;
 
         //top left = (0,0
         //loops through each pixel, gets the rgb values
 
         //CHANGE LOOP TO ONLY LOOK THROUGH WHERE SIGNAL SLEEVE IS
+
+        int redCt = 0;
+        int blueCt = 0;
+        int greenCt = 0;
+
+        int count = 0;
+
         for (int rowNum = 0; rowNum < bitmap.getWidth(); rowNum ++) {
 
             for (int colNum = 0; colNum < bitmap.getHeight(); colNum ++) {
@@ -102,60 +106,52 @@ public class Vision {
 
                 if ((redPixel > 100) && (redPixel > greenPixel) && (redPixel > bluePixel)) {
                     //if the pixel is colored within the color range we set, save its y value
-                    xValues.add(1);
+                    redCt ++;
 
                 } else if ((bluePixel > 100) && (bluePixel > greenPixel) && (bluePixel > redPixel)) {
                     //if the pixel is colored within the color range we set, save its y value
-                    xValues.add(2);
+                    blueCt ++;
 
                 } else if ((greenPixel > 100) && (greenPixel > bluePixel) && (greenPixel > redPixel)) {
                     //if the pixel is colored within the color range we set, save its y value
-                    xValues.add(3);
+                    greenCt ++;
 
                 }
+
+                count ++;
 
             }
 
         }
 
-        //average all of the y pixels to find the average y position of the yellow color
-        for (int x : xValues) {
-            avgX+= x;
 
-        }
 
-        opMode.telemetry.addData("Num Pixels found", xValues.size());
+
+        opMode.telemetry.addData("Num Pixels found", count);
         opMode.telemetry.update();
 
-        try {
-            avgX /= xValues.size();
-        } catch (ArithmeticException E){ //catches divide by zero error
-            return  "posA";
 
-        }
 
-        opMode.telemetry.addData("situation = ", avgX);
+        opMode.telemetry.addLine("red ct: " + redCt + ", blue ct: " + blueCt + ", green ct: " + greenCt );
         opMode.telemetry.update();
         opMode.sleep(1000);
 
         //checks the average y position and different positions correspond to different set ups
 
-        avgX = Math.round(avgX);
-
-        if (avgX == 3.0) {
-            return "blue";
-
-        }
-        else if (avgX == 2.0) {
-            return "green";
-
-        }
-        else if (avgX == 1.0){
+        if (redCt > blueCt && redCt > greenCt) {
             return "red";
 
         }
+        else if (blueCt > greenCt && blueCt > redCt) {
+            return "blue";
+
+        }
+        else if (greenCt > blueCt && greenCt > redCt){
+            return "green";
+
+        }
         else{
-            opMode.telemetry.addLine("avgX not found correctly");
+            opMode.telemetry.addLine("color not found correctly");
             return "red";
         }
 
