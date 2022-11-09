@@ -84,6 +84,8 @@ public class PPTeleOp extends LinearOpMode {
             turret();
             rollers();
             arms();
+
+            telemetry.addData("angle: " ,  getAngle());
             //lift();
 
             /*if(Math.abs(gamepad1.right_stick_y) > 0.1){

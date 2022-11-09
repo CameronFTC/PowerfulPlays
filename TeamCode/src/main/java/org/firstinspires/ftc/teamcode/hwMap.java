@@ -181,23 +181,42 @@ public class hwMap {
 
     public void turnPID(double pwr, double angle, double p, double i, double d, double timeout) { //This is the good PID method use this one
         resetAngle();
+
+        opmode.telemetry.addData("start angle: ", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES));
         double initPos = getAngle();
         ElapsedTime runtime = new ElapsedTime();
         double integral = 0;
+
         while(Math.abs(angle - initPos) >= 1 && runtime.seconds() < timeout){
             double prevError = angle - initPos;
+
+            opmode.telemetry.addData("error: ", prevError);
+
             double proportional = p * prevError;
             double prevTime = runtime.seconds();
-            integral += i * (prevError * (runtime.seconds() - prevTime));
+            integral += i * ((angle - getAngle() - prevError) * (runtime.seconds() - prevTime));
             double derivative = d * ((angle - getAngle() - prevError) / (runtime.seconds() - prevTime));
 
-            fL.setPower((proportional + integral + derivative) * pwr);
-            fR.setPower(-(proportional + integral + derivative) * pwr);
-            bL.setPower((proportional + integral + derivative) * pwr);
-            bR.setPower((proportional + integral + derivative) * pwr);
+            if(Math.abs(proportional + integral + derivative) < Math.abs(pwr)){
+                fL.setPower(proportional + integral + derivative);
+                fR.setPower(-(proportional + integral + derivative));
+                bL.setPower((proportional + integral + derivative));
+                bR.setPower((proportional + integral + derivative));
+            } else {
+                fL.setPower(pwr);
+                fR.setPower(-pwr);
+                bL.setPower(pwr);
+                bR.setPower(-pwr);
+
+            }
+
+
 
 
             opmode.telemetry.addData("angle: ", getAngle());
+            opmode.telemetry.addData("p: ", proportional);
+            opmode.telemetry.addData("i: ", integral);
+            opmode.telemetry.addData("d: ", derivative);
             opmode.telemetry.update();
 
             initPos = getAngle();
