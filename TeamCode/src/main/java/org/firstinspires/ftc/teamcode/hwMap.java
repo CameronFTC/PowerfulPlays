@@ -183,12 +183,12 @@ public class hwMap {
         resetAngle();
 
         opmode.telemetry.addData("start angle: ", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES));
-        double initPos = getAngle();
+        double currPos = getAngle();
         ElapsedTime runtime = new ElapsedTime();
         double integral = 0;
 
-        while(Math.abs(angle - initPos) >= 1 && runtime.seconds() < timeout){
-            double prevError = angle - initPos;
+        while(Math.abs(angle - currPos) >= 1 && runtime.seconds() < timeout){
+            double prevError = angle - currPos;
 
             opmode.telemetry.addData("error: ", prevError);
 
@@ -198,10 +198,10 @@ public class hwMap {
             double derivative = d * ((angle - getAngle() - prevError) / (runtime.seconds() - prevTime));
 
             if(Math.abs(proportional + integral + derivative) < Math.abs(pwr)){
-                fL.setPower(proportional + integral + derivative);
-                fR.setPower(-(proportional + integral + derivative));
-                bL.setPower((proportional + integral + derivative));
-                bR.setPower((proportional + integral + derivative));
+                fL.setPower(-(proportional + integral + derivative));
+                fR.setPower(proportional + integral + derivative);
+                bL.setPower(-(proportional + integral + derivative));
+                bR.setPower(proportional + integral + derivative);
             } else {
                 fL.setPower(pwr);
                 fR.setPower(-pwr);
@@ -219,7 +219,7 @@ public class hwMap {
             opmode.telemetry.addData("d: ", derivative);
             opmode.telemetry.update();
 
-            initPos = getAngle();
+            currPos = getAngle();
         }
 
         fL.setPower(0);

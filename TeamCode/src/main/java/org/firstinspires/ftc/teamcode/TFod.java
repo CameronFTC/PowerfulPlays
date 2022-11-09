@@ -351,12 +351,19 @@ public class TFod extends LinearOpMode {
 
 
 
+    boolean turn = false;
+
     public void trigMecanum(double error) {
 
         double gyroCorrect = (hw.getAngle() - currGyro) * 0.01;
 
-        if(Math.abs(gamepad1.right_stick_x) > 0){
+        if(Math.abs(gamepad1.right_stick_x) > 0 || turn){
             currGyro = hw.getAngle();
+            turn = true;
+        }
+
+        if(Math.abs(gamepad1.left_stick_y) > 0){
+            turn = false;
         }
 
         hw.fL.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x + gyroCorrect);
