@@ -95,9 +95,9 @@ public class Vision {
 
         int count = 0;
 
-        for (int rowNum = 0; rowNum < bitmap.getWidth(); rowNum ++) {
+        for (int rowNum = bitmap.getWidth()/3; rowNum < (2 * (bitmap.getWidth()/3)); rowNum ++) {
 
-            for (int colNum = 0; colNum < bitmap.getHeight(); colNum ++) {
+            for (int colNum = bitmap.getHeight()/3; colNum < (2 * bitmap.getHeight()/3); colNum ++) {
                 int pixel = bitmap.getPixel(rowNum, colNum);
 
                 int greenPixel = green(pixel);
