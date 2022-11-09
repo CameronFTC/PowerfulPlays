@@ -198,10 +198,11 @@ public class hwMap {
             double derivative = d * ((angle - getAngle() - prevError) / (runtime.seconds() - prevTime));
 
             if(Math.abs(proportional + integral + derivative) < Math.abs(pwr)){
-                fL.setPower(-(proportional + integral + derivative));
-                fR.setPower(proportional + integral + derivative);
-                bL.setPower(-(proportional + integral + derivative));
-                bR.setPower(proportional + integral + derivative);
+                fL.setPower(proportional + integral + derivative);
+                fR.setPower(-(proportional + integral + derivative));
+                bL.setPower(proportional + integral + derivative);
+                bR.setPower(-(proportional + integral + derivative));
+
             } else {
                 fL.setPower(pwr);
                 fR.setPower(-pwr);
