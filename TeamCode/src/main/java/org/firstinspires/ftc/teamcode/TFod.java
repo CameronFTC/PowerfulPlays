@@ -199,7 +199,7 @@ public class TFod extends LinearOpMode {
         hw.lift.setPower(gamepad2.right_stick_y);
         telemetry.addData("", gamepad2.right_stick_y);
         telemetry.addData("", gamepad2.left_stick_y);
-        hw.lift2.setPower(gamepad2.left_stick_y);
+        hw.lift2.setPower(gamepad2.right_stick_y);
 
         //hw.lift.setPower(0.5);
         double target;

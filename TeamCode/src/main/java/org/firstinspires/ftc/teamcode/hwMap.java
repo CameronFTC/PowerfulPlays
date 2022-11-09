@@ -179,6 +179,26 @@ public class hwMap {
     }
 
 
+    public void straightNew(double pwr, double RhAdj, double LhAdj) {
+
+        double max = Math.max(Math.abs(pwr + LhAdj), Math.abs(pwr + RhAdj));
+        double leftPwr = pwr + LhAdj;
+        double rightPwr = pwr + RhAdj;
+
+        if (max > 1) {
+            leftPwr /= max;
+            rightPwr /= max;
+        }
+
+        fL.setPower(-leftPwr);
+        fR.setPower(-rightPwr);
+        bL.setPower(-leftPwr);
+        bR.setPower(-rightPwr);
+    }
+
+
+
+
     public void turnPID(double pwr, double angle, double p, double i, double d, double timeout) { //This is the good PID method use this one
         resetAngle();
 
@@ -354,6 +374,7 @@ public class hwMap {
 
         double oldGyro = 0;
         double power;
+        double start = getAngle();
         double error = 0;
         double currTime = timer.milliseconds();
         double LhAdjust = 0;
@@ -372,10 +393,10 @@ public class hwMap {
             derivative = getAngle() - oldGyro * kD;
             power = integral + proportional + derivative;
 
-            error = getAngle();
+            error = start - getAngle();
 
-            RhAdjust = -(error * .028);
-            LhAdjust = (error * .035);
+            RhAdjust = -(error * .01);
+            LhAdjust = (error * .01);
 
             if(power < 0.15 && distance > 0){
                 power = 0.2;
