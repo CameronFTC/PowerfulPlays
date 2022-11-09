@@ -25,12 +25,14 @@ public class RedParkAuto extends LinearOpMode {
             idle();
         }
 
+        hw.turnPID(-0.8, -90, 0.8/90, 0.022, 0.000038, 2);
+
          hw.goStraightPID(600, 0.003, 0.000002, 0.05, 2000, 0.8);
         sleep(100);
-         hw.turnPID(-0.8, -90, 0.8/90, 0.022, 0.000038, 2);
+         hw.turnPID(0.8, 90, 0.8/90, 0.022, 0.000038, 2);
 
         sleep(100);
-         hw.goStraightPID(1200, 0.00075, 0.000004, 0.05, 2000, 0.8);
+         hw.goStraightPID(1200, 0.00075, 0.000004, 0.05, 2000, 0.7);
 
         sleep(100);
          hw.turnPID(0.8, 90, 0.8/90, 0.022, 0.000038, 2);
