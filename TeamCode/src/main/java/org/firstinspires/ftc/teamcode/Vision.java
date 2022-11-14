@@ -82,6 +82,9 @@ public class Vision {
     public String sample() throws InterruptedException{
         Bitmap bitmap = getBitmap();
         opMode.telemetry.addData("height", bitmap.getHeight());
+        opMode.telemetry.addData("width", bitmap.getWidth());
+
+        opMode.telemetry.update();
 
 
         //top left = (0,0
@@ -95,42 +98,51 @@ public class Vision {
 
         int count = 0;
 
-        for (int rowNum = bitmap.getWidth()/3; rowNum < (2 * (bitmap.getWidth()/3)); rowNum ++) {
 
-            for (int colNum = bitmap.getHeight()/3; colNum < (2 * bitmap.getHeight()/3); colNum ++) {
+        for (int rowNum = 0; rowNum < 200; rowNum ++) {
+
+            for (int colNum = 210 ; colNum < 330; colNum ++) {
                 int pixel = bitmap.getPixel(rowNum, colNum);
 
                 int greenPixel = green(pixel);
                 int bluePixel = blue(pixel);
                 int redPixel = red(pixel);
 
-                if ((redPixel > 100) && (redPixel > greenPixel) && (redPixel > bluePixel)) {
+                if ((redPixel > 70) && (redPixel > (bluePixel + 20)) && (redPixel > (greenPixel + 10))) {
                     //if the pixel is colored within the color range we set, save its y value
+
+                    opMode.telemetry.addLine("red pixel: " + redPixel + "," + greenPixel + "," + bluePixel);
                     redCt ++;
 
-                } else if ((bluePixel > 100) && (bluePixel > greenPixel) && (bluePixel > redPixel)) {
+                }
+                if ((bluePixel > 70) && (bluePixel > greenPixel) && (bluePixel > (redPixel + 20))) {
                     //if the pixel is colored within the color range we set, save its y value
                     blueCt ++;
 
-                } else if ((greenPixel > 100) && (greenPixel > bluePixel) && (greenPixel > redPixel)) {
+                }
+                if ((greenPixel > 60) && (greenPixel > (bluePixel + 10)) && (greenPixel > (redPixel + 10))) {
                     //if the pixel is colored within the color range we set, save its y value
                     greenCt ++;
 
                 }
 
+                if(rowNum == 265 && colNum == 220){
+                    opMode.telemetry.addData("R: ", redPixel);
+                    opMode.telemetry.addData("B: ", bluePixel);
+                    opMode.telemetry.addData("G: ", greenPixel);
+                    opMode.telemetry.update();
+
+                }
                 count ++;
 
             }
 
         }
 
-
-
-
-        opMode.telemetry.addData("Num Pixels found", count);
-        opMode.telemetry.update();
-
-
+//        opMode.telemetry.addData("Num Pixels found", count);
+//        opMode.telemetry.update();
+//
+//
 
         opMode.telemetry.addLine("red ct: " + redCt + ", blue ct: " + blueCt + ", green ct: " + greenCt );
         opMode.telemetry.update();
@@ -157,4 +169,93 @@ public class Vision {
 
     }
 
+    public String sampleLeft() throws InterruptedException{
+        Bitmap bitmap = getBitmap();
+        opMode.telemetry.addData("height", bitmap.getHeight());
+        opMode.telemetry.addData("width", bitmap.getWidth());
+
+        opMode.telemetry.update();
+
+
+        //top left = (0,0
+        //loops through each pixel, gets the rgb values
+
+        //CHANGE LOOP TO ONLY LOOK THROUGH WHERE SIGNAL SLEEVE IS
+
+        int redCt = 0;
+        int blueCt = 0;
+        int greenCt = 0;
+
+        int count = 0;
+
+
+        for (int rowNum = 0; rowNum < 200; rowNum ++) {
+
+            for (int colNum = 210 ; colNum < 330; colNum ++) {
+                int pixel = bitmap.getPixel(rowNum, colNum);
+
+                int greenPixel = green(pixel);
+                int bluePixel = blue(pixel);
+                int redPixel = red(pixel);
+
+                if ((redPixel > 70) && (redPixel > (bluePixel + 20)) && (redPixel > (greenPixel + 10))) {
+                    //if the pixel is colored within the color range we set, save its y value
+
+                    opMode.telemetry.addLine("red pixel: " + redPixel + "," + greenPixel + "," + bluePixel);
+                    redCt ++;
+
+                }
+                if ((bluePixel > 70) && (bluePixel > greenPixel) && (bluePixel > (redPixel + 20))) {
+                    //if the pixel is colored within the color range we set, save its y value
+                    blueCt ++;
+
+                }
+                if ((greenPixel > 60) && (greenPixel > (bluePixel + 10)) && (greenPixel > (redPixel + 10))) {
+                    //if the pixel is colored within the color range we set, save its y value
+                    greenCt ++;
+
+                }
+
+                if(rowNum == 265 && colNum == 220){
+                    opMode.telemetry.addData("R: ", redPixel);
+                    opMode.telemetry.addData("B: ", bluePixel);
+                    opMode.telemetry.addData("G: ", greenPixel);
+                    opMode.telemetry.update();
+
+                }
+                count ++;
+
+            }
+
+        }
+
+//        opMode.telemetry.addData("Num Pixels found", count);
+//        opMode.telemetry.update();
+//
+//
+
+        opMode.telemetry.addLine("red ct: " + redCt + ", blue ct: " + blueCt + ", green ct: " + greenCt );
+        opMode.telemetry.update();
+        opMode.sleep(1000);
+
+        //checks the average y position and different positions correspond to different set ups
+
+        if (redCt > blueCt && redCt > greenCt) {
+            return "red";
+
+        }
+        else if (blueCt > greenCt && blueCt > redCt) {
+            return "blue";
+
+        }
+        else if (greenCt > blueCt && greenCt > redCt){
+            return "green";
+
+        }
+        else{
+            opMode.telemetry.addLine("color not found correctly");
+            return "red";
+        }
+
+    }
 }

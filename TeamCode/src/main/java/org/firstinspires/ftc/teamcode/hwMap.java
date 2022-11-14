@@ -39,6 +39,8 @@ public class hwMap {
     public double lastDegrees;
     public double globalAngle;
     public double referenceAngle;
+    public double initAngle;
+    public double rotations;
 
     public double liftEncoderGlobal;
 
@@ -148,12 +150,14 @@ public class hwMap {
         ElapsedTime timer = new ElapsedTime();
 
         while(timer.seconds() < time){
-            roller1.setPower(pwr);
-            roller2.setPower(pwr);
+            arm1.setPower(pwr);
+            arm2.setPower(-pwr);
+
+            opmode.telemetry.addData("arm is working: ", pwr);
         }
 
-        roller1.setPower(0);
-        roller2.setPower(0);
+        arm1.setPower(0);
+        arm2.setPower(0);
     }
 
     public double getAngle() {
@@ -168,6 +172,7 @@ public class hwMap {
 
         if (deltaAngle < -180)
             deltaAngle += 360;
+
         else if (deltaAngle > 180)
             deltaAngle -= 360;
 
@@ -176,8 +181,56 @@ public class hwMap {
         lastAngles = angles;
 
         return -globalAngle;
+
+
+    }
+    public double teleOpgetAngle(boolean clockwise) {
+        //newAngle = if angle is negative, add 360+angles, if angle positive, angles
+        //numRotations = Math.floor(newAngle/359) if coming clockwise direction do this
+        //if coming from counterclockwise direction numRotations = -Math.floor(newAngle/359)
+
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
+        double currentAngle = angles.firstAngle;
+        double returnAngle = 0;
+        int numRotations = 0;
+
+        //if(clockwise){
+            if(currentAngle < 0){
+                returnAngle = currentAngle + 360;
+            } else {
+                returnAngle = currentAngle;
+            }
+
+            if (clockwise)
+                numRotations += Math.floor(returnAngle/359.0);
+            else
+                numRotations -= Math.floor(returnAngle/359.0);
+
+            return returnAngle + (numRotations * 360);
+
+        /*} else {
+            if(currentAngle > 0){
+                returnAngle = currentAngle - 360;
+            } else {
+                returnAngle = currentAngle;
+            }*/
+
     }
 
+    public double getTrueDiff(double destTurn){
+        double currAng = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES).firstAngle;
+
+        if((currAng >= 0 && destTurn >= 0) || (currAng <= 0 && destTurn <= 0))
+            return destTurn - currAng;
+        else if(Math.abs(destTurn - currAng) <= 180)
+            return destTurn - currAng;
+
+        else if(destTurn > currAng)
+            return -(360 - (destTurn - currAng));
+        else
+            return 360 - (currAng - destTurn);
+
+    }
 
     public void straightNew(double pwr, double RhAdj, double LhAdj) {
 
@@ -196,25 +249,42 @@ public class hwMap {
         bR.setPower(-rightPwr);
     }
 
+    public void rolll(double pwr, double time){
+        ElapsedTime timer = new ElapsedTime();
 
+        while(timer.seconds() < time) {
+            roller1.setPower(pwr);
+            roller2.setPower(pwr);
+        }
+
+        roller1.setPower(0);
+        roller2.setPower(0);
+
+
+    }
 
 
     public void turnPID(double pwr, double angle, double p, double i, double d, double timeout) { //This is the good PID method use this one
-        resetAngle();
+
 
         opmode.telemetry.addData("start angle: ", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES));
+        opmode.telemetry.addData("get angle: ", getAngle());
+
+        resetAngle();
+
         double currPos = getAngle();
         ElapsedTime runtime = new ElapsedTime();
         double integral = 0;
 
         while(Math.abs(angle - currPos) >= 1 && runtime.seconds() < timeout){
-            double prevError = angle - currPos;
+            double prevError = angle - getAngle();
+            double prevGyro = getAngle();
 
             opmode.telemetry.addData("error: ", prevError);
 
             double proportional = p * prevError;
             double prevTime = runtime.seconds();
-            integral += i * ((angle - getAngle() - prevError) * (runtime.seconds() - prevTime));
+            integral += i * ((getAngle() - prevGyro) * (runtime.seconds() - prevTime));
             double derivative = d * ((angle - getAngle() - prevError) / (runtime.seconds() - prevTime));
 
             if(Math.abs(proportional + integral + derivative) < Math.abs(pwr)){
@@ -310,6 +380,17 @@ public class hwMap {
         bR.setPower(0);
     }
 
+    public void basicTurn(int time){
+
+        //fL.setPower();
+
+
+
+
+    }
+
+
+
     public double getAvgEncoder() {
 
         double div = 4;
@@ -383,14 +464,17 @@ public class hwMap {
         double derivative;
         double proportional;
         double oldTime = currTime;
+        double startStraight = getAvgEncoder();
+        double travel = 0;
 
 
-        while (Math.abs(distance) > Math.abs(getAvgEncoder()) && !opmode.isStopRequested()) {
+        while (Math.abs(distance) > Math.abs(travel) && !opmode.isStopRequested()) {
+            travel = getAvgEncoder() - startStraight;
             currTime = timer.milliseconds();
 
-            proportional = (distance - getAvgEncoder()) * kP;
-            integral += (distance - getAvgEncoder()) * (currTime - oldTime) * kI;
-            derivative = getAngle() - oldGyro * kD;
+            proportional = (distance - travel) * kP;
+            integral += (travel - (getAvgEncoder() - startStraight)) * (currTime - oldTime) * kI;
+            derivative = (getAngle() - oldGyro) * kD;
             power = integral + proportional + derivative;
 
             error = start - getAngle();

@@ -159,7 +159,7 @@ public class TFod extends LinearOpMode {
                         arms();
                         turret(error);
 
-                        telemetry.update();
+                        //telemetry.update();
                     }
                 }
             }
@@ -195,11 +195,16 @@ public class TFod extends LinearOpMode {
     }
 
     private void liftNow(){
-        telemetry.addLine("lift is working!!!!!! woo hoo");
-        hw.lift.setPower(gamepad2.right_stick_y);
-        telemetry.addData("", gamepad2.right_stick_y);
-        telemetry.addData("", gamepad2.left_stick_y);
-        hw.lift2.setPower(gamepad2.right_stick_y);
+        //telemetry.addLine("lift is working!!!!!! woo hoo");
+        if(gamepad2.right_stick_y > 0.1){
+            hw.lift.setPower(gamepad2.right_stick_y);
+            hw.lift2.setPower(gamepad2.right_stick_y);
+        }
+        else{
+            hw.lift.setPower(gamepad2.right_stick_y * 0.1);
+            hw.lift2.setPower(gamepad2.right_stick_y * 0.1);
+        }
+
 
         //hw.lift.setPower(0.5);
         double target;
@@ -303,7 +308,7 @@ public class TFod extends LinearOpMode {
 
 
                 hw.turretPID(0.9, error, 0.025, 0, 0, 2);
-                telemetry.update();
+                //telemetry.update();
             }
         }
     }
@@ -355,10 +360,19 @@ public class TFod extends LinearOpMode {
 
     public void trigMecanum(double error) {
 
-        double gyroCorrect = (hw.getAngle() - currGyro) * 0.01;
+        double gyroCorrect = (hw.teleOpgetAngle(true) - currGyro) * 0.01;
+        boolean clockwise = false;
 
         if(Math.abs(gamepad1.right_stick_x) > 0 || turn){
+            /*if (hw.teleOpgetAngle(clockwise) - currGyro > 0) {
+                clockwise = true;
+            }
+            else {
+                clockwise = false;
+            }*/
+
             currGyro = hw.getAngle();
+
             turn = true;
         }
 
@@ -366,10 +380,16 @@ public class TFod extends LinearOpMode {
             turn = false;
         }
 
-        hw.fL.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x + gyroCorrect);
-        hw.fR.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x);
-        hw.bL.setPower(gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x + gyroCorrect);
-        hw.bR.setPower(gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x);
+        telemetry.addData("gyro correct: " , gyroCorrect);
+        telemetry.addData("currGyro " , currGyro);
+        telemetry.addData("current angle " , hw.getAngle());
+
+        telemetry.update();
+
+        hw.fL.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x) * 0.75);
+        hw.fR.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x) * 0.75);
+        hw.bL.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x) * 0.75);
+        hw.bR.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x) * 0.75);
 
         /*double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;
         double leftstickx = -gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x);
