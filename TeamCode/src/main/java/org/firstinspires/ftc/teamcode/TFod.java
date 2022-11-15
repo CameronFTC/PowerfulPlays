@@ -6,6 +6,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -360,18 +363,11 @@ public class TFod extends LinearOpMode {
 
     public void trigMecanum(double error) {
 
-        double gyroCorrect = (hw.teleOpgetAngle(true) - currGyro) * 0.01;
-        boolean clockwise = false;
+        double gyroCorrect = (hw.getTrueDiff(currGyro)) * 0.01;
 
         if(Math.abs(gamepad1.right_stick_x) > 0 || turn){
-            /*if (hw.teleOpgetAngle(clockwise) - currGyro > 0) {
-                clockwise = true;
-            }
-            else {
-                clockwise = false;
-            }*/
 
-            currGyro = hw.getAngle();
+            currGyro = hw.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES).firstAngle;
 
             turn = true;
         }

@@ -1,25 +1,18 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class hwMap {
-
-    /*
-        silly little to do list
-        -roadrunner
-
-
-     */
+public class trollHwMap {
     public DcMotor bR;
     public DcMotor fR;
     public DcMotor fL;
@@ -47,14 +40,6 @@ public class hwMap {
     double pwr;
     double time;
 
-    private Runnable autoOuttake = new Runnable()
-    {
-        @Override
-        public void run() {
-            outtake(pwr, time);
-        }
-    };
-
 
 
     LinearOpMode opmode;
@@ -64,26 +49,12 @@ public class hwMap {
     private Thread outtakeThread;
     private Thread liftThread;
 
-    public hwMap(LinearOpMode opmode) {
+    public trollHwMap(LinearOpMode opmode) {
         this.opmode = opmode;
         fL = opmode.hardwareMap.get(DcMotor.class, "fL");
         fR = opmode.hardwareMap.get(DcMotor.class, "fR");
         bL = opmode.hardwareMap.get(DcMotor.class, "bL");
         bR = opmode.hardwareMap.get(DcMotor.class, "bR");
-        arm1 = opmode.hardwareMap.get(CRServo.class, "arm1");
-        arm2 = opmode.hardwareMap.get(CRServo.class, "arm2");
-
-        turret = opmode.hardwareMap.get(DcMotor.class, "turret");
-        lift = opmode.hardwareMap.get(DcMotor.class, "lift");
-        lift2 = opmode.hardwareMap.get(DcMotor.class, "lift2");
-
-        //lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        liftEncoderGlobal = 0;
-
-        roller1 = opmode.hardwareMap.get(CRServo.class, "roller1");
-        roller2 = opmode.hardwareMap.get(CRServo.class, "roller2");
 
         fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -107,11 +78,6 @@ public class hwMap {
 
         imu.initialize(parameters);
 
-        //turretTurn = new Thread(turningTurret);
-        outtakeThread = new Thread(autoOuttake);
-
-
-        //driveTrain.srvMarker.setPosition(1);
 
         opmode.telemetry.addData("Mode", "calibrating...");
         opmode.telemetry.update();
@@ -128,36 +94,10 @@ public class hwMap {
 
     }
 
-    public void setThread(Runnable run, Runnable run2){
-        turretTurn = new Thread(run);
-        liftThread = new Thread(run2);
-    }
-
-
-    public void startOuttakeThread(double pwr, double time){
-        this.pwr = pwr;
-        this.time = time;
-        outtakeThread.start();
-    }
-
     public void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
 
         globalAngle = 0;
-    }
-
-    public void outtake (double time, double pwr){
-        ElapsedTime timer = new ElapsedTime();
-
-        while(timer.seconds() < time){
-            arm1.setPower(pwr);
-            arm2.setPower(-pwr);
-
-            opmode.telemetry.addData("arm is working: ", pwr);
-        }
-
-        arm1.setPower(0);
-        arm2.setPower(0);
     }
 
     public double getAngle() {
@@ -196,21 +136,21 @@ public class hwMap {
         int numRotations = 0;
 
         //if(clockwise){
-            if(currentAngle < 0){
-                returnAngle = currentAngle + 360;
-            } else {
-                returnAngle = currentAngle;
-            }
+        if(currentAngle < 0){
+            returnAngle = currentAngle + 360;
+        } else {
+            returnAngle = currentAngle;
+        }
 
-            if (clockwise)
-                numRotations += Math.floor(returnAngle/359.0);
-            else
-                numRotations -= Math.floor(returnAngle/359.0);
+        if (clockwise)
+            numRotations += Math.floor(returnAngle/359.0);
+        else
+            numRotations -= Math.floor(returnAngle/359.0);
 
-            return returnAngle + (numRotations * 360);
+        return returnAngle + (numRotations * 360);
 
-            //double currAng = getCurrGyro();
-            //if((currAng >= 0) && destTurn >= );
+        //double currAng = getCurrGyro();
+        //if((currAng >= 0) && destTurn >= );
 
         /*} else {
             if(currentAngle > 0){
@@ -517,39 +457,6 @@ public class hwMap {
         stopAll();
     }
 
-    public void turretPID(double pwr, double angle, double kp, double ki, double kd, double timeout){
-        double prev = getTurretAngle(turret.getCurrentPosition());
-        double current = getTurretAngle(turret.getCurrentPosition());
-        ElapsedTime runtime = new ElapsedTime();
-        double p;
-        double i = 0;
-        double d;
-        double preTime = 0;
-
-        while(Math.abs(current - angle) > 1 && runtime.seconds() < timeout){
-            current = getTurretAngle(turret.getCurrentPosition());
-            double currTime = runtime.seconds();
-
-            p = (current - angle) * kp;
-            i += (current - prev) * (currTime - preTime) * ki;
-            d = ((current - prev)/(currTime - preTime)) * kd;
-
-            pwr = p + i + d;
-
-            turret.setPower(pwr);
-            preTime = currTime;
-            prev = current;
-
-        }
-
-        turret.setPower(0);
-    }
-
-    public double getTurretAngle(double ticks){
-        double totalTicks = 120;
-        return ticks/totalTicks * 360;
-    }
-
     public void resetEncoders() {
 
         fL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -571,5 +478,4 @@ public class hwMap {
         opmode.idle();
 
     }
-
 }

@@ -165,6 +165,12 @@ public class PPTeleOp extends LinearOpMode {
 
     private void rollers(){
         if(gamepad2.right_trigger > 0.1){
+            lift.setPower(gamepad2.right_stick_y);
+            lift2.setPower(gamepad2.right_stick_y);
+        }
+        lift.setPower(gamepad2.right_stick_y);
+        lift2.setPower(gamepad2.right_stick_y);
+        if(gamepad2.right_trigger > 0.1){
             roller1.setPower(gamepad2.right_trigger);
             roller2.setPower(-gamepad2.right_trigger);
         }
@@ -179,8 +185,14 @@ public class PPTeleOp extends LinearOpMode {
     }
 
     private void lift() {
-        lift.setPower(gamepad2.right_stick_y);
-        lift2.setPower(gamepad2.right_stick_y);
+        if (gamepad2.right_stick_y >= 0){
+            lift.setPower(gamepad2.right_stick_y);
+            lift2.setPower(gamepad2.right_stick_y);
+        }
+        else if (gamepad2.right_stick_y < 0){
+            lift.setPower(gamepad2.right_stick_y*.6);
+            lift2.setPower(gamepad2.right_stick_y*.6);
+        }
         /*double target;
         if(gamepad2.right_stick_y > 0){
             target = gamepad2.right_stick_y * 2940;
