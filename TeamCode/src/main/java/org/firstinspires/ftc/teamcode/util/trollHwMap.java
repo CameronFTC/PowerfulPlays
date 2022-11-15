@@ -324,11 +324,7 @@ public class trollHwMap {
 
         //fL.setPower();
 
-
-
-
     }
-
 
 
     public double getAvgEncoder() {
