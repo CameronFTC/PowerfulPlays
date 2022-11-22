@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,12 +17,7 @@ public class trollHwMap {
     public DcMotor fR;
     public DcMotor fL;
     public DcMotor bL;
-    public DcMotor turret;
-    public DcMotor lift;
-    public DcMotor lift2;
 
-    public CRServo arm1;
-    public CRServo arm2;
     public CRServo roller1;
     public CRServo roller2;
 
@@ -34,12 +29,6 @@ public class trollHwMap {
     public double referenceAngle;
     public double initAngle;
     public double rotations;
-
-    public double liftEncoderGlobal;
-
-    double pwr;
-    double time;
-
 
 
     LinearOpMode opmode;
