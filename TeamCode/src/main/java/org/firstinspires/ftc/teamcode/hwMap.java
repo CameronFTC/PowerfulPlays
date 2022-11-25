@@ -24,7 +24,6 @@ public class hwMap {
     public DcMotor fR;
     public DcMotor fL;
     public DcMotor bL;
-    public DcMotor turret;
     public DcMotor lift;
     public DcMotor lift2;
 
@@ -60,7 +59,6 @@ public class hwMap {
     LinearOpMode opmode;
     ElapsedTime runtime = new ElapsedTime();
 
-    private Thread turretTurn;
     private Thread outtakeThread;
     private Thread liftThread;
 
@@ -73,7 +71,6 @@ public class hwMap {
         arm1 = opmode.hardwareMap.get(CRServo.class, "arm1");
         arm2 = opmode.hardwareMap.get(CRServo.class, "arm2");
 
-        turret = opmode.hardwareMap.get(DcMotor.class, "turret");
         lift = opmode.hardwareMap.get(DcMotor.class, "lift");
         lift2 = opmode.hardwareMap.get(DcMotor.class, "lift2");
 
@@ -128,8 +125,7 @@ public class hwMap {
 
     }
 
-    public void setThread(Runnable run, Runnable run2){
-        turretTurn = new Thread(run);
+    public void setThread(Runnable run2){
         liftThread = new Thread(run2);
     }
 
@@ -515,39 +511,6 @@ public class hwMap {
 
 
         stopAll();
-    }
-
-    public void turretPID(double pwr, double angle, double kp, double ki, double kd, double timeout){
-        double prev = getTurretAngle(turret.getCurrentPosition());
-        double current = getTurretAngle(turret.getCurrentPosition());
-        ElapsedTime runtime = new ElapsedTime();
-        double p;
-        double i = 0;
-        double d;
-        double preTime = 0;
-
-        while(Math.abs(current - angle) > 1 && runtime.seconds() < timeout){
-            current = getTurretAngle(turret.getCurrentPosition());
-            double currTime = runtime.seconds();
-
-            p = (current - angle) * kp;
-            i += (current - prev) * (currTime - preTime) * ki;
-            d = ((current - prev)/(currTime - preTime)) * kd;
-
-            pwr = p + i + d;
-
-            turret.setPower(pwr);
-            preTime = currTime;
-            prev = current;
-
-        }
-
-        turret.setPower(0);
-    }
-
-    public double getTurretAngle(double ticks){
-        double totalTicks = 120;
-        return ticks/totalTicks * 360;
     }
 
     public void resetEncoders() {

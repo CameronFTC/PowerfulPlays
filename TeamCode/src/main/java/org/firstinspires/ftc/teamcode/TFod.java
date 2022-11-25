@@ -64,13 +64,6 @@ public class TFod extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
-    private Runnable turretTurn = new Runnable(){
-        @Override
-        public void run() {
-            theSnapper();
-            //hw.drop();
-        }
-    };
 
     private Runnable liftUp = new Runnable() {
         @Override
@@ -85,7 +78,6 @@ public class TFod extends LinearOpMode {
     @Override
     public void runOpMode() {
         hw = new hwMap(this);
-        hw.setThread(turretTurn, liftUp);
 
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
@@ -160,9 +152,7 @@ public class TFod extends LinearOpMode {
                         liftNow();
                         rollers();
                         arms();
-                        turret(error);
 
-                        //telemetry.update();
                     }
                 }
             }
@@ -172,15 +162,6 @@ public class TFod extends LinearOpMode {
     /**
      * Initialize the Vuforia localization engine.
      */
-
-    private void turret(double error){
-        if(gamepad2.b) {
-            hw.turret.setPower(error);
-        } else {
-            hw.turret.setPower(0);
-        }
-
-    }
 
     private void arms() {
         if (gamepad2.a) {
@@ -254,66 +235,6 @@ public class TFod extends LinearOpMode {
     private void rollers(){
             hw.roller1.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
             hw.roller2.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
-    }
-
-    private void theSnapper(){
-        //if camera sees it
-            //activate tfod, check angle and //size
-            //while of PID until angle is within threshold
-                //PID of our encoders
-            //activate intake thingy and grab cone
-        //else
-            //telem: skill issue l bozo
-            //if b
-                    //activate intake thingy and grab cone
-
-        double col = 0;
-        double row = 0;
-        double width = 0;
-        double height = 0;
-        double error = 0;
-
-        if (tfod != null) {
-            // getUpdatedRecognitions() will return null if no new information is available since
-            // the last time that call was made.
-            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-            if (updatedRecognitions != null) {
-                telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                // step through the list of recognitions and display image position/size information for each one
-                // Note: "Image number" refers to the randomized image orientation/number
-                for (Recognition recognition : updatedRecognitions) {
-                    col = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                    row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-                    width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
-                    height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
-
-                    telemetry.addData(""," ");
-                    telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
-                    telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
-                    telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
-
-                    telemetry.addData("error from object:", error);
-                    telemetry.addData("side 1: ", Math.abs(270 - col)/96.0);
-                    telemetry.addData("side 2: ", -5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97);
-                }
-
-                error = getHeading(width, height, col, row);
-
-                if (updatedRecognitions.size() != 0) {
-
-                    ElapsedTime runtime = new ElapsedTime();
-                    double integral = 0;
-                    double progress = 0.00;
-                    //reset encoders
-
-                }
-
-
-                hw.turretPID(0.9, error, 0.025, 0, 0, 2);
-                //telemetry.update();
-            }
-        }
     }
 
     private void initVuforia() {
