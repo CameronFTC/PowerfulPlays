@@ -68,9 +68,9 @@ public class trollTeleOp extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()){
             trigMecanum();
-            turret();
-            rollers();
-            arms();
+            //turret();
+            //rollers();
+            //arms();
 
             telemetry.addData("angle: " ,  getAngle());
             //lift();
@@ -126,7 +126,7 @@ public class trollTeleOp extends LinearOpMode {
         return -globalAngle;
     }
 
-    private void turret(){
+    /*private void turret(){
         turret.setPower(gamepad2.left_stick_x);
     }
 
@@ -179,7 +179,7 @@ public class trollTeleOp extends LinearOpMode {
         else if (gamepad2.right_stick_y < 0){
             lift.setPower(gamepad2.right_stick_y*.6);
             lift2.setPower(gamepad2.right_stick_y*.6);
-        }
+        }*/
         /*double target;
         if(gamepad2.right_stick_y > 0){
             target = gamepad2.right_stick_y * 2940;
@@ -216,7 +216,6 @@ public class trollTeleOp extends LinearOpMode {
 
         double speed = 0;
     */
-    }
 
     public void trigMecanum() {
         double gyroCorrect = (getAngle() - currGyro) * 0.008;

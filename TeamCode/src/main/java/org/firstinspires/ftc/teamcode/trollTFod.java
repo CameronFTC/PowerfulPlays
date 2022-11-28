@@ -156,9 +156,9 @@ public class trollTFod extends LinearOpMode {
                         }
 
                         trigMecanum(error);
-                        liftNow();
+                        //liftNow();
                         rollers();
-                        arms();
+                        //arms();
                         //turret(error);
 
                         //telemetry.update();
@@ -172,7 +172,7 @@ public class trollTFod extends LinearOpMode {
      * Initialize the Vuforia localization engine.
      */
 
-    private void arms() {
+    /*private void arms() {
         if (gamepad2.a) {
             hw.arm1.setPower(1);
             hw.arm2.setPower(-1);
@@ -239,7 +239,7 @@ public class trollTFod extends LinearOpMode {
 
 
 
-    }
+
 
     private void rollers(){
             hw.roller1.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
@@ -300,7 +300,7 @@ public class trollTFod extends LinearOpMode {
                 }
 
 
-                hw.turretPID(0.9, error, 0.025, 0, 0, 2);
+                //hw.turretPID(0.9, error, 0.025, 0, 0, 2);
                 //telemetry.update();
             }
         }
