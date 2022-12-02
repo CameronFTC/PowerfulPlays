@@ -29,8 +29,11 @@ public class hwMap {
 
     public CRServo arm1;
     public CRServo arm2;
-    public CRServo roller1;
-    public CRServo roller2;
+    public Servo claw;
+    public Servo wrist;
+    public Servo tilt;
+    /*public CRServo roller1;
+    public CRServo roller2;*/
 
     public BNO055IMU imu;
     public Orientation lastAngles = new Orientation();
@@ -79,8 +82,11 @@ public class hwMap {
 
         liftEncoderGlobal = 0;
 
-        roller1 = opmode.hardwareMap.get(CRServo.class, "roller1");
-        roller2 = opmode.hardwareMap.get(CRServo.class, "roller2");
+        claw = opmode.hardwareMap.get(Servo.class, "claw");
+        wrist = opmode.hardwareMap.get(Servo.class, "wrist");
+        tilt = opmode.hardwareMap.get(Servo.class, "tilt");
+        /*roller1 = opmode.hardwareMap.get(CRServo.class, "roller1");
+        roller2 = opmode.hardwareMap.get(CRServo.class, "roller2");*/
 
         fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -91,8 +97,8 @@ public class hwMap {
         bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        bL.setDirection(DcMotorSimple.Direction.REVERSE);
-        fL.setDirection(DcMotorSimple.Direction.REVERSE);
+        bR.setDirection(DcMotorSimple.Direction.REVERSE);
+        fR.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -249,7 +255,7 @@ public class hwMap {
         bR.setPower(-rightPwr);
     }
 
-    public void rolll(double pwr, double time){
+    /*public void rolll(double pwr, double time){
         ElapsedTime timer = new ElapsedTime();
 
         while(timer.seconds() < time) {
@@ -261,7 +267,7 @@ public class hwMap {
         roller2.setPower(0);
 
 
-    }
+    }*/
 
 
     public void turnPID(double pwr, double angle, double p, double i, double d, double timeout) { //This is the good PID method use this one
@@ -270,9 +276,13 @@ public class hwMap {
         opmode.telemetry.addData("start angle: ", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES));
         opmode.telemetry.addData("get angle: ", getAngle());
 
+
+
         resetAngle();
 
         double statAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES).firstAngle;
+
+        opmode.telemetry.addData("dest angle: ", angle + statAngle);
         ElapsedTime runtime = new ElapsedTime();
         double integral = 0;
 
@@ -283,14 +293,23 @@ public class hwMap {
 
             double proportional = p * prevError;
             double prevTime = runtime.seconds();
-            integral += i * (getTrueDiff(angle + statAngle) - prevError) * (runtime.seconds() - prevTime);
+            integral += i * -(getTrueDiff(angle + statAngle) - prevError) * (runtime.seconds() - prevTime);
             double derivative = d * ((getTrueDiff(angle + statAngle) - prevError) / (runtime.seconds() - prevTime));
+            double power = proportional + integral + derivative;
 
             if(Math.abs(proportional + integral + derivative) < Math.abs(pwr)){
-                fL.setPower(-(proportional + integral + derivative));
-                fR.setPower(proportional + integral + derivative);
-                bL.setPower(-(proportional + integral + derivative));
-                bR.setPower(proportional + integral + derivative);
+                if(power > -0.268 && power < 0){
+                    power = -0.268;
+                }
+
+                else if(power < 0.268 && power > 0){
+                    power = 0.268;
+                }
+
+                fL.setPower(-power);
+                fR.setPower(power);
+                bL.setPower(-power);
+                bR.setPower(power);
 
             } else {
                 fL.setPower(-pwr);
@@ -299,7 +318,6 @@ public class hwMap {
                 bR.setPower(pwr);
 
             }
-
 
             opmode.telemetry.addData("angle: ", getAngle());
             opmode.telemetry.addData("p: ", proportional);
@@ -473,10 +491,10 @@ public class hwMap {
             derivative = (getAngle() - oldGyro) * kD;
             power = integral + proportional + derivative;
 
-            error = start - getAngle();
+            error = getTrueDiff(start);
 
-            RhAdjust = -(error * .01);
-            LhAdjust = (error * .01);
+            RhAdjust = (error * .02);
+            LhAdjust = -(error * .02);
 
             if(power < 0.15 && distance > 0){
                 power = 0.2;
@@ -511,6 +529,96 @@ public class hwMap {
 
 
         stopAll();
+    }
+
+    public void goStraightPID2(double distance, double kP, double kI, double kD, double timeout, double max, double negative){
+        ElapsedTime time = new ElapsedTime();
+        resetEncoders();
+        time.startTime();
+
+        double pastAngle = getAngle();
+        double error;
+        double power;
+        double currentTime = time.milliseconds();
+        double leftFactor = 0;
+        double rightFactor = 0;
+        double proportional;
+        double integral = 0;
+        double derivative;
+        double pastTime = currentTime;
+
+        opmode.telemetry.addData("ok straight before ", 2);
+        opmode.telemetry.update();
+
+        opmode.sleep(1000);
+        opmode.telemetry.addData("Distance ", distance);
+        opmode.telemetry.addData("Avg Encoder ", getAvgEncoder());
+        opmode.sleep(1000);
+        opmode.telemetry.update();
+
+        while(Math.abs(distance) > Math.abs(getAvgEncoder()) && !opmode.isStopRequested()){
+            currentTime = time.milliseconds();
+            opmode.telemetry.addLine("ok straight now");
+            opmode.telemetry.update();
+
+            proportional = (distance - getAvgEncoder()) * kP;
+            integral += (distance - getAvgEncoder()) * (currentTime - pastTime) * kI;
+            derivative = getTrueDiff(pastAngle) * kD;
+            power = proportional + integral + derivative;
+            error = getAngle() - pastAngle;
+
+            leftFactor = -(error * .028);
+            rightFactor = (error * .028);
+
+            if(power < 0.15 && distance > 0){
+                power = 0.15;
+            }
+            if(power > -0.15 && distance < 0){
+                power = -0.15;
+            }
+
+            if(Math.abs(power) > Math.abs(max)){
+                power = max;
+            }
+            pastTime = currentTime;
+            goStraight(power * negative, rightFactor, leftFactor);
+
+            if(currentTime > timeout){
+                break;
+            }
+
+            opmode.telemetry.addData("Avg Encoder Val", getAvgEncoder());
+            opmode.telemetry.addData("Gyro Error", error);
+            opmode.telemetry.addData("Amount left", (distance - getAvgEncoder()));
+            opmode.telemetry.addData("Forward power", power);
+            opmode.telemetry.addData("Proportional", proportional);
+            opmode.telemetry.addData("Integral", integral);
+            opmode.telemetry.addData("Derivatve", derivative);
+            opmode.telemetry.update();
+
+        }
+
+        opmode.telemetry.addData("ok straight after ", 2);
+        opmode.telemetry.update();
+
+        stopAll();
+    }
+
+    public void goStraight(double pwr, double right, double left) {
+
+        double max = Math.max(Math.abs(pwr + left), Math.abs(pwr + right));
+        double leftPwr = pwr + left;
+        double rightPwr = pwr + right;
+
+        if (max > 1) {
+            leftPwr /= max;
+            rightPwr /= max;
+        }
+
+        fL.setPower(leftPwr);
+        fR.setPower(rightPwr);
+        bL.setPower(leftPwr);
+        bR.setPower(rightPwr);
     }
 
     public void resetEncoders() {

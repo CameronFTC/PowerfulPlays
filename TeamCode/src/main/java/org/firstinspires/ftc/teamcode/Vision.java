@@ -99,9 +99,9 @@ public class Vision {
         int count = 0;
 
 
-        for (int rowNum = 0; rowNum < 200; rowNum ++) {
+        for (int rowNum = 300; rowNum < 370; rowNum ++) {
 
-            for (int colNum = 210 ; colNum < 330; colNum ++) {
+            for (int colNum = 300; colNum < 410; colNum ++) {
                 int pixel = bitmap.getPixel(rowNum, colNum);
 
                 int greenPixel = green(pixel);
@@ -189,9 +189,9 @@ public class Vision {
         int count = 0;
 
 
-        for (int rowNum = 0; rowNum < 200; rowNum ++) {
+        for (int rowNum = 30; rowNum < 110; rowNum ++) {
 
-            for (int colNum = 210 ; colNum < 330; colNum ++) {
+            for (int colNum = 260 ; colNum < 390; colNum ++) {
                 int pixel = bitmap.getPixel(rowNum, colNum);
 
                 int greenPixel = green(pixel);

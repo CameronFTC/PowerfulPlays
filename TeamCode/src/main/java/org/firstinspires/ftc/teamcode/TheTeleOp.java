@@ -32,8 +32,8 @@ public class TheTeleOp extends LinearOpMode {
                 hw.lift.setPower(gamepad2.right_stick_y * 0.6);
                 hw.lift2.setPower(gamepad2.right_stick_y * 0.6);
             }
-            hw.roller1.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
-            hw.roller2.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
+            /*hw.roller1.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
+            hw.roller2.setPower(gamepad2.right_trigger - gamepad2.left_trigger);*/
         }
     }
 

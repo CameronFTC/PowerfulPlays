@@ -150,9 +150,11 @@ public class TFod extends LinearOpMode {
 
                         trigMecanum(error);
                         liftNow();
-                        rollers();
+                        //rollers();
+                        claw();
+                        wrist();
+                        tilt();
                         arms();
-
                     }
                 }
             }
@@ -162,6 +164,33 @@ public class TFod extends LinearOpMode {
     /**
      * Initialize the Vuforia localization engine.
      */
+
+    private void claw(){
+        if(gamepad2.right_bumper){
+            hw.claw.setPosition(0);
+        }
+        else if(gamepad2.left_bumper){
+            hw.claw.setPosition(1);
+        }
+    }
+
+    private void tilt(){
+        if(gamepad2.dpad_down){
+            hw.wrist.setPosition(0);
+        }
+        else if(gamepad2.dpad_up){
+            hw.wrist.setPosition(1);
+        }
+    }
+
+    private void wrist(){
+        if(gamepad2.x){
+            hw.tilt.setPosition(0);
+        }
+        else if(gamepad2.y){
+            hw.tilt.setPosition(1);
+        }
+    }
 
     private void arms() {
         if (gamepad2.a) {
@@ -181,12 +210,12 @@ public class TFod extends LinearOpMode {
     private void liftNow(){
         //telemetry.addLine("lift is working!!!!!! woo hoo");
         if(gamepad2.right_stick_y > 0.1){
-            hw.lift.setPower(gamepad2.right_stick_y);
-            hw.lift2.setPower(gamepad2.right_stick_y);
+            hw.lift.setPower(-gamepad2.right_stick_y);
+            hw.lift2.setPower(-gamepad2.right_stick_y);
         }
         else{
-            hw.lift.setPower(gamepad2.right_stick_y * 0.1);
-            hw.lift2.setPower(gamepad2.right_stick_y * 0.1);
+            hw.lift.setPower(-gamepad2.right_stick_y * 0.6);
+            hw.lift2.setPower(-gamepad2.right_stick_y * 0.6);
         }
 
 
@@ -232,10 +261,10 @@ public class TFod extends LinearOpMode {
 
     }
 
-    private void rollers(){
-            hw.roller1.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
-            hw.roller2.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
-    }
+    /*private void rollers(){
+            hw.roller1.setPower(-(gamepad2.right_trigger - gamepad2.left_trigger));
+            hw.roller2.setPower(-(gamepad2.right_trigger - gamepad2.left_trigger));
+    }*/
 
     private void initVuforia() {
         /*
@@ -303,10 +332,10 @@ public class TFod extends LinearOpMode {
 
         telemetry.update();
 
-        hw.fL.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x) * 0.75);
-        hw.fR.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x) * 0.75);
-        hw.bL.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x) * 0.75);
-        hw.bR.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x) * 0.75);
+        hw.fL.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x) * 0.65);
+        hw.fR.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x) * 0.65);
+        hw.bL.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x) * 0.65);
+        hw.bR.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x) * 0.65);
 
         /*double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;
         double leftstickx = -gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x);

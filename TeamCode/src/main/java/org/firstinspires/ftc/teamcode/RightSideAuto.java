@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous(group = "Autonomous", name = "RightSideAuto")
-public class RedParkAuto extends LinearOpMode {
+public class RightSideAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         hwMap hw = new hwMap(this);
@@ -26,7 +26,7 @@ public class RedParkAuto extends LinearOpMode {
         }
 
        while(opModeIsActive()){
-           hw.turnPID(0.675, 90, 0.62/90, 1.2, 0.0006, 4);
+           hw.turnPID(0.675, -90, 0.62/90, 1.2, 0.0006, 4);
            sleep(100);
 
            hw.goStraightPID(-190, 0.004, 0.00000005, 0.005, 4000, -0.7);
@@ -44,7 +44,7 @@ public class RedParkAuto extends LinearOpMode {
 
            sleep(100);
 
-           hw.rolll(-1, 2);
+           //hw.rolll(-1, 2);
 
            hw.outtake(3, 0.97);
 
