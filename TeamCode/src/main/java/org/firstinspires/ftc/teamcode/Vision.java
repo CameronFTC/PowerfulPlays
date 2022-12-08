@@ -189,9 +189,9 @@ public class Vision {
         int count = 0;
 
 
-        for (int rowNum = 30; rowNum < 110; rowNum ++) {
+        for (int rowNum = 0; rowNum < 150; rowNum ++) {
 
-            for (int colNum = 260 ; colNum < 390; colNum ++) {
+            for (int colNum = 220 ; colNum < 430; colNum ++) {
                 int pixel = bitmap.getPixel(rowNum, colNum);
 
                 int greenPixel = green(pixel);

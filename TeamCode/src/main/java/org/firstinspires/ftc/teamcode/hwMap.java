@@ -27,10 +27,10 @@ public class hwMap {
     public DcMotor lift;
     public DcMotor lift2;
 
-    public CRServo arm1;
-    public CRServo arm2;
-    public Servo claw;
-    public Servo wrist;
+    public Servo arm1;
+    public Servo arm2;
+    public CRServo claw;
+    public CRServo wrist;
     public Servo tilt;
     /*public CRServo roller1;
     public CRServo roller2;*/
@@ -71,8 +71,8 @@ public class hwMap {
         fR = opmode.hardwareMap.get(DcMotor.class, "fR");
         bL = opmode.hardwareMap.get(DcMotor.class, "bL");
         bR = opmode.hardwareMap.get(DcMotor.class, "bR");
-        arm1 = opmode.hardwareMap.get(CRServo.class, "arm1");
-        arm2 = opmode.hardwareMap.get(CRServo.class, "arm2");
+        arm1 = opmode.hardwareMap.get(Servo.class, "arm1");
+        arm2 = opmode.hardwareMap.get(Servo.class, "arm2");
 
         lift = opmode.hardwareMap.get(DcMotor.class, "lift");
         lift2 = opmode.hardwareMap.get(DcMotor.class, "lift2");
@@ -82,8 +82,8 @@ public class hwMap {
 
         liftEncoderGlobal = 0;
 
-        claw = opmode.hardwareMap.get(Servo.class, "claw");
-        wrist = opmode.hardwareMap.get(Servo.class, "wrist");
+        claw = opmode.hardwareMap.get(CRServo.class, "claw");
+        wrist = opmode.hardwareMap.get(CRServo.class, "wrist");
         tilt = opmode.hardwareMap.get(Servo.class, "tilt");
         /*roller1 = opmode.hardwareMap.get(CRServo.class, "roller1");
         roller2 = opmode.hardwareMap.get(CRServo.class, "roller2");*/
@@ -99,6 +99,7 @@ public class hwMap {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         bR.setDirection(DcMotorSimple.Direction.REVERSE);
         fR.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
 
         parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -152,14 +153,14 @@ public class hwMap {
         ElapsedTime timer = new ElapsedTime();
 
         while(timer.seconds() < time){
-            arm1.setPower(pwr);
-            arm2.setPower(-pwr);
+            //arm1.setPower(pwr);
+//            arm2.setPower(-pwr);
 
             opmode.telemetry.addData("arm is working: ", pwr);
         }
-
-        arm1.setPower(0);
-        arm2.setPower(0);
+//
+//        arm1.setPower(0);
+//        arm2.setPower(0);
     }
 
     public double getAngle() {

@@ -167,55 +167,64 @@ public class TFod extends LinearOpMode {
 
     private void claw(){
         if(gamepad2.right_bumper){
-            hw.claw.setPosition(0);
+            hw.claw.setPower(-1);
+            telemetry.addLine("claw trying now open");
+            telemetry.update();
         }
-        else if(gamepad2.left_bumper){
-            hw.claw.setPosition(1);
+        else if (gamepad2.left_bumper){
+            hw.claw.setPower(1);
+            telemetry.addLine("claw not trying");
+            telemetry.update();
+        }
+        else {
+            hw.claw.setPower(0);
+            telemetry.addLine("claw not trying");
+            telemetry.update();
         }
     }
 
     private void tilt(){
-        if(gamepad2.dpad_down){
-            hw.wrist.setPosition(0);
-        }
-        else if(gamepad2.dpad_up){
-            hw.wrist.setPosition(1);
-        }
+        hw.wrist.setPower(gamepad2.right_stick_y);
     }
 
     private void wrist(){
-        if(gamepad2.x){
+        if(gamepad2.x)
             hw.tilt.setPosition(0);
-        }
-        else if(gamepad2.y){
+
+        if(gamepad2.y)
             hw.tilt.setPosition(1);
-        }
     }
 
     private void arms() {
         if (gamepad2.a) {
-            hw.arm1.setPower(1);
-            hw.arm2.setPower(-1);
+            hw.arm1.setPosition(0.47);
+            hw.arm2.setPosition(0.5);
+            telemetry.addLine("arm1 at 0.5");
+            telemetry.update();
         }
         else if (gamepad2.b) {
-            hw.arm1.setPower(-.4);
-            hw.arm2.setPower(.4);
+            hw.arm1.setPosition(0.56);
+            hw.arm2.setPosition(0.39); //0.45
+
+            //hw.arm1.setPosition(0.505)
+
+
+            //hw.arm2.setPosition(0.5);
+            telemetry.addLine("arm2 at 0.5");
+            telemetry.update();
         }
-        else{
-            hw.arm1.setPower(0);
-            hw.arm2.setPower(0);
-        }
+
     }
 
     private void liftNow(){
         //telemetry.addLine("lift is working!!!!!! woo hoo");
-        if(gamepad2.right_stick_y > 0.1){
-            hw.lift.setPower(-gamepad2.right_stick_y);
-            hw.lift2.setPower(-gamepad2.right_stick_y);
+        if(gamepad2.left_stick_y > 0.1){
+            hw.lift.setPower(-gamepad2.left_stick_y);
+            hw.lift2.setPower(-gamepad2.left_stick_y);
         }
         else{
-            hw.lift.setPower(-gamepad2.right_stick_y * 0.6);
-            hw.lift2.setPower(-gamepad2.right_stick_y * 0.6);
+            hw.lift.setPower(-gamepad2.left_stick_y * 0.6);
+            hw.lift2.setPower(-gamepad2.left_stick_y * 0.6);
         }
 
 
@@ -332,10 +341,10 @@ public class TFod extends LinearOpMode {
 
         telemetry.update();
 
-        hw.fL.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x) * 0.65);
-        hw.fR.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x) * 0.65);
-        hw.bL.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x) * 0.65);
-        hw.bR.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x) * 0.65);
+        hw.fL.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x *  0.75)) * 0.65);
+        hw.fR.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75)) * 0.65);
+        hw.bL.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75)) * 0.65);
+        hw.bR.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75)) * 0.65);
 
         /*double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;
         double leftstickx = -gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x);

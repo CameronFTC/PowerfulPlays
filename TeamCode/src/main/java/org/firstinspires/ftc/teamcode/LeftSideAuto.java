@@ -57,7 +57,7 @@ public class LeftSideAuto extends LinearOpMode {
 
             hw.turnPID(0.675, 90, 0.63/90, 1.1, 0.0006, 4);
 
-            hw.goStraightPID(375, 0.0015, 0.0000002, 0.05, 5000, 0.7);
+            hw.goStraightPID(355, 0.0015, 0.0000002, 0.05, 5000, 0.7);
 
             sleep(1000);
 

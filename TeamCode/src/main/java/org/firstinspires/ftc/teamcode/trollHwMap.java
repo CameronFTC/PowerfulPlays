@@ -5,21 +5,35 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class trollHwMap {
+
+    /*
+        silly little to do list
+        -roadrunner
+
+
+     */
     public DcMotor bR;
     public DcMotor fR;
     public DcMotor fL;
     public DcMotor bL;
+    public DcMotor lift;
+    public DcMotor lift2;
 
-    public CRServo roller1;
-    public CRServo roller2;
+    public CRServo arm1;
+    public CRServo arm2;
+    public CRServo claw;
+    public CRServo wrist;
+    public CRServo tilt;
+    /*public CRServo roller1;
+    public CRServo roller2;*/
 
     public BNO055IMU imu;
     public Orientation lastAngles = new Orientation();
@@ -30,11 +44,24 @@ public class trollHwMap {
     public double initAngle;
     public double rotations;
 
+    public double liftEncoderGlobal;
+
+    double pwr;
+    double time;
+
+    private Runnable autoOuttake = new Runnable()
+    {
+        @Override
+        public void run() {
+            outtake(pwr, time);
+        }
+    };
+
+
 
     LinearOpMode opmode;
     ElapsedTime runtime = new ElapsedTime();
 
-    private Thread turretTurn;
     private Thread outtakeThread;
     private Thread liftThread;
 
@@ -44,6 +71,22 @@ public class trollHwMap {
         fR = opmode.hardwareMap.get(DcMotor.class, "fR");
         bL = opmode.hardwareMap.get(DcMotor.class, "bL");
         bR = opmode.hardwareMap.get(DcMotor.class, "bR");
+        arm1 = opmode.hardwareMap.get(CRServo.class, "arm1");
+        arm2 = opmode.hardwareMap.get(CRServo.class, "arm2");
+
+        lift = opmode.hardwareMap.get(DcMotor.class, "lift");
+        lift2 = opmode.hardwareMap.get(DcMotor.class, "lift2");
+
+        //lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        liftEncoderGlobal = 0;
+
+        claw = opmode.hardwareMap.get(CRServo.class, "claw");
+        wrist = opmode.hardwareMap.get(CRServo.class, "wrist");
+        tilt = opmode.hardwareMap.get(CRServo.class, "tilt");
+        /*roller1 = opmode.hardwareMap.get(CRServo.class, "roller1");
+        roller2 = opmode.hardwareMap.get(CRServo.class, "roller2");*/
 
         fL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -54,8 +97,8 @@ public class trollHwMap {
         bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        bL.setDirection(DcMotorSimple.Direction.REVERSE);
-        fL.setDirection(DcMotorSimple.Direction.REVERSE);
+        bR.setDirection(DcMotorSimple.Direction.REVERSE);
+        fR.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -67,6 +110,11 @@ public class trollHwMap {
 
         imu.initialize(parameters);
 
+        //turretTurn = new Thread(turningTurret);
+        outtakeThread = new Thread(autoOuttake);
+
+
+        //driveTrain.srvMarker.setPosition(1);
 
         opmode.telemetry.addData("Mode", "calibrating...");
         opmode.telemetry.update();
@@ -83,10 +131,35 @@ public class trollHwMap {
 
     }
 
+    public void setThread(Runnable run2){
+        liftThread = new Thread(run2);
+    }
+
+
+    public void startOuttakeThread(double pwr, double time){
+        this.pwr = pwr;
+        this.time = time;
+        outtakeThread.start();
+    }
+
     public void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);
 
         globalAngle = 0;
+    }
+
+    public void outtake (double time, double pwr){
+        ElapsedTime timer = new ElapsedTime();
+
+        while(timer.seconds() < time){
+            arm1.setPower(pwr);
+            arm2.setPower(-pwr);
+
+            opmode.telemetry.addData("arm is working: ", pwr);
+        }
+
+        arm1.setPower(0);
+        arm2.setPower(0);
     }
 
     public double getAngle() {
@@ -182,7 +255,7 @@ public class trollHwMap {
         bR.setPower(-rightPwr);
     }
 
-    public void rolll(double pwr, double time){
+    /*public void rolll(double pwr, double time){
         ElapsedTime timer = new ElapsedTime();
 
         while(timer.seconds() < time) {
@@ -194,7 +267,7 @@ public class trollHwMap {
         roller2.setPower(0);
 
 
-    }
+    }*/
 
 
     public void turnPID(double pwr, double angle, double p, double i, double d, double timeout) { //This is the good PID method use this one
@@ -203,9 +276,13 @@ public class trollHwMap {
         opmode.telemetry.addData("start angle: ", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES));
         opmode.telemetry.addData("get angle: ", getAngle());
 
+
+
         resetAngle();
 
         double statAngle = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES).firstAngle;
+
+        opmode.telemetry.addData("dest angle: ", angle + statAngle);
         ElapsedTime runtime = new ElapsedTime();
         double integral = 0;
 
@@ -216,14 +293,23 @@ public class trollHwMap {
 
             double proportional = p * prevError;
             double prevTime = runtime.seconds();
-            integral += i * (getTrueDiff(angle + statAngle) - prevError) * (runtime.seconds() - prevTime);
+            integral += i * -(getTrueDiff(angle + statAngle) - prevError) * (runtime.seconds() - prevTime);
             double derivative = d * ((getTrueDiff(angle + statAngle) - prevError) / (runtime.seconds() - prevTime));
+            double power = proportional + integral + derivative;
 
             if(Math.abs(proportional + integral + derivative) < Math.abs(pwr)){
-                fL.setPower(-(proportional + integral + derivative));
-                fR.setPower(proportional + integral + derivative);
-                bL.setPower(-(proportional + integral + derivative));
-                bR.setPower(proportional + integral + derivative);
+                if(power > -0.268 && power < 0){
+                    power = -0.268;
+                }
+
+                else if(power < 0.268 && power > 0){
+                    power = 0.268;
+                }
+
+                fL.setPower(-power);
+                fR.setPower(power);
+                bL.setPower(-power);
+                bR.setPower(power);
 
             } else {
                 fL.setPower(-pwr);
@@ -232,7 +318,6 @@ public class trollHwMap {
                 bR.setPower(pwr);
 
             }
-
 
             opmode.telemetry.addData("angle: ", getAngle());
             opmode.telemetry.addData("p: ", proportional);
@@ -313,7 +398,11 @@ public class trollHwMap {
 
         //fL.setPower();
 
+
+
+
     }
+
 
 
     public double getAvgEncoder() {
@@ -402,10 +491,10 @@ public class trollHwMap {
             derivative = (getAngle() - oldGyro) * kD;
             power = integral + proportional + derivative;
 
-            error = start - getAngle();
+            error = getTrueDiff(start);
 
-            RhAdjust = -(error * .01);
-            LhAdjust = (error * .01);
+            RhAdjust = (error * .02);
+            LhAdjust = -(error * .02);
 
             if(power < 0.15 && distance > 0){
                 power = 0.2;
@@ -442,6 +531,96 @@ public class trollHwMap {
         stopAll();
     }
 
+    public void goStraightPID2(double distance, double kP, double kI, double kD, double timeout, double max, double negative){
+        ElapsedTime time = new ElapsedTime();
+        resetEncoders();
+        time.startTime();
+
+        double pastAngle = getAngle();
+        double error;
+        double power;
+        double currentTime = time.milliseconds();
+        double leftFactor = 0;
+        double rightFactor = 0;
+        double proportional;
+        double integral = 0;
+        double derivative;
+        double pastTime = currentTime;
+
+        opmode.telemetry.addData("ok straight before ", 2);
+        opmode.telemetry.update();
+
+        opmode.sleep(1000);
+        opmode.telemetry.addData("Distance ", distance);
+        opmode.telemetry.addData("Avg Encoder ", getAvgEncoder());
+        opmode.sleep(1000);
+        opmode.telemetry.update();
+
+        while(Math.abs(distance) > Math.abs(getAvgEncoder()) && !opmode.isStopRequested()){
+            currentTime = time.milliseconds();
+            opmode.telemetry.addLine("ok straight now");
+            opmode.telemetry.update();
+
+            proportional = (distance - getAvgEncoder()) * kP;
+            integral += (distance - getAvgEncoder()) * (currentTime - pastTime) * kI;
+            derivative = getTrueDiff(pastAngle) * kD;
+            power = proportional + integral + derivative;
+            error = getAngle() - pastAngle;
+
+            leftFactor = -(error * .028);
+            rightFactor = (error * .028);
+
+            if(power < 0.15 && distance > 0){
+                power = 0.15;
+            }
+            if(power > -0.15 && distance < 0){
+                power = -0.15;
+            }
+
+            if(Math.abs(power) > Math.abs(max)){
+                power = max;
+            }
+            pastTime = currentTime;
+            goStraight(power * negative, rightFactor, leftFactor);
+
+            if(currentTime > timeout){
+                break;
+            }
+
+            opmode.telemetry.addData("Avg Encoder Val", getAvgEncoder());
+            opmode.telemetry.addData("Gyro Error", error);
+            opmode.telemetry.addData("Amount left", (distance - getAvgEncoder()));
+            opmode.telemetry.addData("Forward power", power);
+            opmode.telemetry.addData("Proportional", proportional);
+            opmode.telemetry.addData("Integral", integral);
+            opmode.telemetry.addData("Derivatve", derivative);
+            opmode.telemetry.update();
+
+        }
+
+        opmode.telemetry.addData("ok straight after ", 2);
+        opmode.telemetry.update();
+
+        stopAll();
+    }
+
+    public void goStraight(double pwr, double right, double left) {
+
+        double max = Math.max(Math.abs(pwr + left), Math.abs(pwr + right));
+        double leftPwr = pwr + left;
+        double rightPwr = pwr + right;
+
+        if (max > 1) {
+            leftPwr /= max;
+            rightPwr /= max;
+        }
+
+        fL.setPower(leftPwr);
+        fR.setPower(rightPwr);
+        bL.setPower(leftPwr);
+        bR.setPower(rightPwr);
+    }
+
     public void resetEncoders() {
 
         fL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -463,4 +642,5 @@ public class trollHwMap {
         opmode.idle();
 
     }
+
 }

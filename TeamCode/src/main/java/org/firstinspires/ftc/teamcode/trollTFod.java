@@ -242,8 +242,8 @@ public class trollTFod extends LinearOpMode {
 
 
     private void rollers(){
-            hw.roller1.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
-            hw.roller2.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
+//            hw.roller1.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
+//            hw.roller2.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
     }
 
     private void theSnapper(){
