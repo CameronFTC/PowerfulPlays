@@ -29,8 +29,8 @@ public class hwMap {
 
     public Servo arm1;
     public Servo arm2;
-    public CRServo claw;
-    public CRServo wrist;
+    public Servo claw;
+    public Servo wrist;
     public Servo tilt;
     /*public CRServo roller1;
     public CRServo roller2;*/
@@ -82,8 +82,8 @@ public class hwMap {
 
         liftEncoderGlobal = 0;
 
-        claw = opmode.hardwareMap.get(CRServo.class, "claw");
-        wrist = opmode.hardwareMap.get(CRServo.class, "wrist");
+        claw = opmode.hardwareMap.get(Servo.class, "claw");
+        wrist = opmode.hardwareMap.get(Servo.class, "wrist");
         tilt = opmode.hardwareMap.get(Servo.class, "tilt");
         /*roller1 = opmode.hardwareMap.get(CRServo.class, "roller1");
         roller2 = opmode.hardwareMap.get(CRServo.class, "roller2");*/

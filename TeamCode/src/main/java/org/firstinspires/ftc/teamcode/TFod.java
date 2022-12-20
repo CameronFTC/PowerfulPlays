@@ -167,24 +167,24 @@ public class TFod extends LinearOpMode {
 
     private void claw(){
         if(gamepad2.right_bumper){
-            hw.claw.setPower(-1);
+            hw.claw.setPosition(-1);
             telemetry.addLine("claw trying now open");
             telemetry.update();
         }
         else if (gamepad2.left_bumper){
-            hw.claw.setPower(1);
-            telemetry.addLine("claw not trying");
-            telemetry.update();
-        }
-        else {
-            hw.claw.setPower(0);
+            hw.claw.setPosition(1);
             telemetry.addLine("claw not trying");
             telemetry.update();
         }
     }
 
     private void tilt(){
-        hw.wrist.setPower(gamepad2.right_stick_y);
+        if(gamepad2.dpad_left){
+            hw.wrist.setPosition(-1);
+        }
+        else if (gamepad2.dpad_right){
+            hw.wrist.setPosition(1);
+        }
     }
 
     private void wrist(){
@@ -197,14 +197,20 @@ public class TFod extends LinearOpMode {
 
     private void arms() {
         if (gamepad2.a) {
-            hw.arm1.setPosition(0.47);
-            hw.arm2.setPosition(0.5);
+            hw.arm1.setPosition(0.5);
+            hw.arm2.setPosition(0.48);
+            hw.tilt.setPosition(0);
             telemetry.addLine("arm1 at 0.5");
             telemetry.update();
+
+            //up scoring on wrong side
         }
         else if (gamepad2.b) {
-            hw.arm1.setPosition(0.56);
-            hw.arm2.setPosition(0.39); //0.45
+            hw.arm1.setPosition(0.35); //.56
+            hw.arm2.setPosition(0.6); //0.39
+            hw.tilt.setPosition(1);
+
+            //down picking up wrong sode
 
             //hw.arm1.setPosition(0.505)
 
@@ -212,6 +218,12 @@ public class TFod extends LinearOpMode {
             //hw.arm2.setPosition(0.5);
             telemetry.addLine("arm2 at 0.5");
             telemetry.update();
+        }
+
+        else {
+            telemetry.addData("arm1 position", hw.arm1.getPosition());
+            telemetry.addData("arm2 position", hw.arm2.getPosition());
+
         }
 
     }
@@ -316,7 +328,25 @@ public class TFod extends LinearOpMode {
         return -heading;
     }
 
+    public void scoreMacro1(){
+        hw.arm1.setPosition(1);
+        hw.arm2.setPosition(1);
+        hw.tilt.setPosition(0);
+        hw.wrist.setPosition(0);
+    }
+    public void scoreMacro2(){
+        hw.arm1.setPosition(1); //
+        hw.arm2.setPosition(1);
 
+        hw.tilt.setPosition(0);
+        hw.wrist.setPosition(0);
+    }
+    public void intakeMacro1(){
+
+    }
+    public void intakeMacro2(){
+
+    }
 
     boolean turn = false;
 
