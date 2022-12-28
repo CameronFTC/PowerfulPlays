@@ -43,7 +43,7 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
     public static double PERPENDICULAR_X = -8;
     public static double PERPENDICULAR_Y = 3;
 
-    public static double X_MULIPLIER = 100;
+    public static double X_MULIPLIER = 1;
     public static double Y_MULIPLIER = 1;
 
 
