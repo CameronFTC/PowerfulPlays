@@ -99,6 +99,7 @@ public class hwMap {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         bR.setDirection(DcMotorSimple.Direction.REVERSE);
         fR.setDirection(DcMotorSimple.Direction.REVERSE);
+        arm1.setDirection(Servo.Direction.REVERSE);
 
 
 

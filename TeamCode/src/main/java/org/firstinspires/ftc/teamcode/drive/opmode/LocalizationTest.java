@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.TwoWheelTrackingLocalizer;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -38,6 +39,8 @@ public class LocalizationTest extends LinearOpMode {
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
+            //telemetry.addData("encoders", (TwoWheelTrackingLocalizer)drive.getLocalizer());
+            //telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
         }
