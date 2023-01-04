@@ -437,6 +437,42 @@ public class hwMap {
         return -avg;
     }
 
+    public double getAvgEncoderStrafe() {
+
+        double div = 4;
+        double avgAdd = bL.getCurrentPosition() - bR.getCurrentPosition() -  fL.getCurrentPosition() + fR.getCurrentPosition();
+        double avg;
+
+        if (bL.getCurrentPosition() == 0) {
+            div--;
+        }
+
+        if (bR.getCurrentPosition() == 0) {
+            div--;
+        }
+        if (fL.getCurrentPosition() == 0) {
+            div--;
+        }
+
+        if (fR.getCurrentPosition() == 0) {
+            div--;
+        }
+
+        if (div == 0) {
+            avg = 0;
+        } else {
+            avg = avgAdd / div;
+        }
+
+        return -avg;
+    }
+
+
+
+
+
+
+
     public void straight(double pwr, double RhAdj, double LhAdj) {
 
         double max = Math.max(Math.abs(pwr + LhAdj), Math.abs(pwr + RhAdj));
@@ -451,6 +487,23 @@ public class hwMap {
         fL.setPower(-leftPwr);
         fR.setPower(-rightPwr);
         bL.setPower(-leftPwr);
+        bR.setPower(-rightPwr);
+    }
+
+    public void strafe(double pwr, double RhAdj, double LhAdj) {
+
+        double max = Math.max(Math.abs(pwr + LhAdj), Math.abs(pwr + RhAdj));
+        double leftPwr = pwr + LhAdj;
+        double rightPwr = pwr + RhAdj;
+
+        if (max > 1) {
+            leftPwr /= max;
+            rightPwr /= max;
+        }
+
+        fL.setPower(-leftPwr);
+        fR.setPower(rightPwr);
+        bL.setPower(leftPwr);
         bR.setPower(-rightPwr);
     }
 
@@ -532,6 +585,80 @@ public class hwMap {
 
         stopAll();
     }
+
+    public void goStrafePID(double distance, double kP, double kI, double kD, double timeout, double max) {
+        ElapsedTime timer = new ElapsedTime();
+        resetEncoders();
+        timer.startTime();
+
+        double oldGyro = 0;
+        double power;
+        double start = getAngle();
+        double error = 0;
+        double currTime = timer.milliseconds();
+        double LhAdjust = 0;
+        double RhAdjust = 0;
+        double integral = 0;
+        double derivative;
+        double proportional;
+        double oldTime = currTime;
+        double startPlace = getAvgEncoder();
+        double travel = 0;
+
+
+        while (Math.abs(distance) > Math.abs(travel) && !opmode.isStopRequested()) {
+            travel = getAvgEncoderStrafe() - startPlace;
+            currTime = timer.milliseconds();
+
+            proportional = (distance - travel) * kP;
+            integral += (travel - (getAvgEncoderStrafe() - startPlace)) * (currTime - oldTime) * kI;
+            derivative = (getAngle() - oldGyro) * kD;
+            power = integral + proportional + derivative;
+
+            error = getTrueDiff(start);
+
+            RhAdjust = (error * .02);
+            LhAdjust = -(error * .02);
+
+            if(power < 0.15 && distance > 0){
+                power = 0.2;
+            }
+            if(power > -0.15 && distance < 0){
+                power = -0.2;
+            }
+
+            if(Math.abs(power) > Math.abs(max)){
+                power = max;
+            }
+            oldTime = currTime;
+            strafe(power, RhAdjust, LhAdjust);
+
+            opmode.telemetry.addData("Avg Encoder Val", getAvgEncoderStrafe());
+            opmode.telemetry.addData("Gyro Error", error);
+            opmode.telemetry.addData("Amount left", (distance - getAvgEncoderStrafe()));
+            opmode.telemetry.addData("Forward power", power);
+            opmode.telemetry.addData("Proportional", proportional);
+            opmode.telemetry.addData("Integral", integral);
+            opmode.telemetry.addData("Derivatve", derivative);
+            opmode.telemetry.addData("Left power: ", LhAdjust);
+            opmode.telemetry.addData("Right power: ", RhAdjust);
+            opmode.telemetry.update();
+
+            if (currTime > timeout) {
+                break;
+            }
+
+            oldGyro = getAngle();
+        }
+
+
+        stopAll();
+    }
+
+
+
+
+
 
     public void goStraightPID2(double distance, double kP, double kI, double kD, double timeout, double max, double negative){
         ElapsedTime time = new ElapsedTime();
@@ -644,5 +771,7 @@ public class hwMap {
         opmode.idle();
 
     }
+
+
 
 }

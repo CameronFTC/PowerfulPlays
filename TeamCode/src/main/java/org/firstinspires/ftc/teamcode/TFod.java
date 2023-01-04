@@ -210,7 +210,7 @@ public class TFod extends LinearOpMode {
             hw.arm2.setPosition(0.53); //0.39
             hw.tilt.setPosition(1);
 
-            //down picking up wrong sode
+            //down picking up wrong side
 
             //hw.arm1.setPosition(0.505)
 

@@ -27,6 +27,7 @@ public class RightSideAuto extends LinearOpMode {
 
        while(opModeIsActive()){
            hw.turnPID(0.675, -90, 0.62/90, 1.2, 0.0006, 4);
+
            sleep(100);
 
            hw.goStraightPID(-190, 0.004, 0.00000005, 0.005, 4000, -0.7);
