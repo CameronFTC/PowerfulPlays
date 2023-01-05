@@ -197,8 +197,8 @@ public class TFod extends LinearOpMode {
 
     private void arms() {
         if (gamepad2.b) {
-            hw.arm1.setPosition(0.34);
-            hw.arm2.setPosition(0.22);
+            hw.arm1.setPosition(0.1);
+            hw.arm2.setPosition(0.1);
             hw.tilt.setPosition(0);
             telemetry.addLine("arm1 at 0.5");
             telemetry.update();
@@ -206,8 +206,8 @@ public class TFod extends LinearOpMode {
             //up scoring on wrong side
         }
         else if (gamepad2.a) {
-            hw.arm1.setPosition(0.53); //.56
-            hw.arm2.setPosition(0.53); //0.39
+            hw.arm1.setPosition(1); //.56
+            hw.arm2.setPosition(1); //0.39
             hw.tilt.setPosition(1);
 
             //down picking up wrong side
