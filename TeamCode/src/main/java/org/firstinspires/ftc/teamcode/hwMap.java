@@ -46,14 +46,14 @@ public class hwMap {
 
     public double liftEncoderGlobal;
 
-    double pwr;
-    double time;
+    double position;
 
     private Runnable autoOuttake = new Runnable()
     {
         @Override
         public void run() {
-            outtake(pwr, time);
+            arm1.setPosition(position);
+            arm2.setPosition(position);
         }
     };
 
@@ -138,9 +138,8 @@ public class hwMap {
     }
 
 
-    public void startOuttakeThread(double pwr, double time){
-        this.pwr = pwr;
-        this.time = time;
+    public void startOuttakeThread(double position){
+        this.position = position;
         outtakeThread.start();
     }
 

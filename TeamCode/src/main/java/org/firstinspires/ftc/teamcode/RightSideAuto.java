@@ -26,11 +26,31 @@ public class RightSideAuto extends LinearOpMode {
         }
 
        while(opModeIsActive()){
-           hw.turnPID(0.675, -90, 0.62/90, 1.2, 0.0006, 4);
+           hw.goStraightPID2(-1000, 0.0037, 0.00000005, 0.05, 4000, -0.7, -1);
 
-           sleep(100);
+           hw.turnPID(0.675, 35, 0.62/90, 0.0005, 0.0006, 4);
 
-           hw.goStraightPID(-190, 0.004, 0.00000005, 0.005, 4000, -0.7);
+           sleep(3000);
+
+           hw.turnPID(0.675, 70, 0.62/90, 0.0005, 0.0006, 4);
+
+           hw.startOuttakeThread(0.1);
+
+           hw.goStraightPID2(300, 0.07, 0.00000005, 0.05, 4000, -0.7, 1);
+
+           sleep(3000);
+
+           hw.goStraightPID2(-300, 0.0017, 0.00000005, 0.05, 4000, -0.7, -1);
+
+           hw.turnPID(-0.675, -70, 0.62/90, 0.0005, 0.0006, 4);
+
+           sleep(3000);
+
+           hw.turnPID(-0.675, -35, 0.62/90, 0.0005, 0.0006, 4);
+
+           hw.goStraightPID2(-500, 0.0037, 0.00000005, 0.05, 4000, -0.7, -1);
+
+           /*hw.goStraightPID(-190, 0, 0, 0.0, 4000, -0.7);
 
            sleep(100);
            // hw.turnPID(-0.7, -45, 0.7/45, 0.03, 0.000038, 2);
@@ -68,7 +88,7 @@ public class RightSideAuto extends LinearOpMode {
 
            //hw.goStraightPID(300, 0.0017, 0.0000002, 0.05, 4000, 0.7);
 
-           //hw.startOuttakeThread(0.7, 3);
+           //hw.startOuttakeThread(0.7, 3);*/
 
 
            //hw.turnPID(0.675, 90, 0.7/90, 1, 0.0006, 4);
@@ -84,13 +104,14 @@ public class RightSideAuto extends LinearOpMode {
 //        sleep(100);
 //
            switch (parkDist) {
+               case "blue":
+                   break;
                case "red":
+                   //hw.goStraightPID(165, 0.003, 0.000001, 0.05, 2000, 0.8);
+                   hw.goStrafePID(500, 0.003, 0.000001, 0.05, 2000, 0.7);
                    break;
                case "green":
-                   hw.goStraightPID(165, 0.003, 0.000001, 0.05, 2000, 0.8);
-                   break;
-               case "blue":
-                   hw.goStraightPID(360, 0.002, 0.000002, 0.05, 2000, 0.8);
+                   hw.goStrafePID(-500, 0.003, 0.000001, 0.05, 2000, -0.7);
                    break;
            }
 
