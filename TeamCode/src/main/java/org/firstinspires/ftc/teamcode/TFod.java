@@ -183,10 +183,10 @@ public class TFod extends LinearOpMode {
             hw.wrist.setPosition(-1);
         }
         else if (gamepad2.dpad_right){
-            hw.wrist.setPosition(1);
+            hw.wrist.setPosition(0.3);
         }
     }
-
+//avi is rly stinky
     private void wrist(){
         if(gamepad2.x)
             hw.tilt.setPosition(0);
@@ -197,18 +197,18 @@ public class TFod extends LinearOpMode {
 
     private void arms() {
         if (gamepad2.b) {
-            hw.arm1.setPosition(0.1);
-            hw.arm2.setPosition(0.1);
-            hw.tilt.setPosition(0);
+            hw.arm1.setPosition(0.11);
+            hw.arm2.setPosition(0.11);
+            hw.tilt.setPosition(1);
             telemetry.addLine("arm1 at 0.5");
             telemetry.update();
 
             //up scoring on wrong side
         }
         else if (gamepad2.a) {
-            hw.arm1.setPosition(1); //.56
-            hw.arm2.setPosition(1); //0.39
-            hw.tilt.setPosition(1);
+            hw.arm1.setPosition(0.66); //.56
+            hw.arm2.setPosition(0.23); //0.39
+            hw.tilt.setPosition(0);
 
             //down picking up wrong side
 
@@ -218,6 +218,18 @@ public class TFod extends LinearOpMode {
             //hw.arm2.setPosition(0.5);
             telemetry.addLine("arm2 at 0.5");
             telemetry.update();
+        }
+        else if(gamepad2.dpad_down){
+            hw.arm1.setPosition(0.34);
+            hw.arm2.setPosition(0.16);
+            hw.wrist.setPosition(0.3);
+            hw.tilt.setPosition(1);
+        }
+        else if(gamepad2.dpad_up){
+            hw.arm1.setPosition(0.48);
+            hw.arm2.setPosition(0.18);
+            hw.wrist.setPosition(0.35);
+            hw.tilt.setPosition(1);
         }
 
         else {

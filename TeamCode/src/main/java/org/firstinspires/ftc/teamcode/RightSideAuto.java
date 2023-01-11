@@ -28,31 +28,39 @@ public class RightSideAuto extends LinearOpMode {
        while(opModeIsActive()){
            hw.goStraightPID2(-1000, 0.0037, 0.00000005, 0.05, 4000, -0.7, -1);
 
-           hw.turnPID(0.675, 35, 0.62/90, 0.0005, 0.0006, 4);
-
-           sleep(3000);
-
-           hw.turnPID(0.675, 70, 0.62/90, 0.0005, 0.0006, 4);
-
            hw.startOuttakeThread(0.1);
+           sleep(100);
 
-           hw.goStraightPID2(300, 0.07, 0.00000005, 0.05, 4000, -0.7, 1);
+           hw.turnPID(0.675, 35, 0.63/35, 1.5, 0.0006, 4);
 
-           sleep(3000);
-
-           hw.goStraightPID2(-300, 0.0017, 0.00000005, 0.05, 4000, -0.7, -1);
-
-           hw.turnPID(-0.675, -70, 0.62/90, 0.0005, 0.0006, 4);
+           //hw.claw.setPosition(1);
 
            sleep(3000);
 
-           hw.turnPID(-0.675, -35, 0.62/90, 0.0005, 0.0006, 4);
+           hw.turnPID(0.675, 49, 0.62/50, 0.5, 0.0006, 4);
+           sleep(100);
 
-           hw.goStraightPID2(-500, 0.0037, 0.00000005, 0.05, 4000, -0.7, -1);
+           hw.goStraightPID2(395, 0.0017, 0.00000005, 0.05, 4000, 0.7, 1);
+
+           //hw.claw.setPosition(0);
+
+           sleep(3000);
+
+           hw.goStraightPID2(-395, 0.0017, 0.00000005, 0.05, 4000, -0.7, -1);
+
+           hw.turnPID(-0.675, -50, 0.65/50, 0.0005, 0.0006, 4);
+
+           sleep(3000);
+
+           hw.turnPID(0.675, -35, 0.63/35, 1.5, 0.0006, 4);
+
+           sleep(1000);
+
+           //hw.goStraightPID2(-500, 0.0037, 0.00000005, 0.05, 4000, -0.7, -1);
 
            /*hw.goStraightPID(-190, 0, 0, 0.0, 4000, -0.7);
 
-           sleep(100);
+           sleep(100)
            // hw.turnPID(-0.7, -45, 0.7/45, 0.03, 0.000038, 2);
 
            hw.turnPID(-0.7, -45, 0.012, 1.1, 0.0006, 2);
@@ -108,14 +116,17 @@ public class RightSideAuto extends LinearOpMode {
                    break;
                case "red":
                    //hw.goStraightPID(165, 0.003, 0.000001, 0.05, 2000, 0.8);
-                   hw.goStrafePID(500, 0.003, 0.000001, 0.05, 2000, 0.7);
+                   hw.goStrafePID(800, 0.0008, 0.000001, 0.04, 4000, 0.8);
                    break;
+
                case "green":
-                   hw.goStrafePID(-500, 0.003, 0.000001, 0.05, 2000, -0.7);
+                   hw.goStrafePID(-800, 0.0008, 0.000001, 0.04, 4000, 0.8);
                    break;
            }
 
+           hw.goStrafePID(800, 0.0008, 0.000001, 0.04, 4000, 0.8);
            sleep(30000);
+
 
 //        if(pos == 2){
 //            hw.turnPID(0.7, -90, 0.7 / 90, 0.00000148148, 0.000038, 2);

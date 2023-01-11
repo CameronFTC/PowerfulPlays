@@ -590,7 +590,7 @@ public class hwMap {
         resetEncoders();
         timer.startTime();
 
-        double oldGyro = 0;
+        double oldGyro = getAngle();
         double power;
         double start = getAngle();
         double error = 0;
@@ -604,7 +604,6 @@ public class hwMap {
         double startPlace = getAvgEncoder();
         double travel = 0;
 
-
         while (Math.abs(distance) > Math.abs(travel) && !opmode.isStopRequested()) {
             travel = getAvgEncoderStrafe() - startPlace;
             currTime = timer.milliseconds();
@@ -616,8 +615,8 @@ public class hwMap {
 
             error = getTrueDiff(start);
 
-            RhAdjust = (error * .02);
-            LhAdjust = -(error * .02);
+            RhAdjust = (error * .025);
+            LhAdjust = -(error * .025);
 
             if(power < 0.15 && distance > 0){
                 power = 0.2;
@@ -678,7 +677,7 @@ public class hwMap {
         opmode.telemetry.addData("ok straight before ", 2);
         opmode.telemetry.update();
 
-        opmode.sleep(1000);
+        //opmode.sleep(1000);
         opmode.telemetry.addData("Distance ", distance);
         opmode.telemetry.addData("Avg Encoder ", getAvgEncoder());
         opmode.sleep(1000);
