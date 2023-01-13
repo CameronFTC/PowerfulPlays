@@ -153,7 +153,7 @@ public class TFod extends LinearOpMode {
                         //rollers();
                         claw();
                         wrist();
-                        tilt();
+                        //tilt();
                         arms();
                     }
                 }
@@ -178,37 +178,39 @@ public class TFod extends LinearOpMode {
         }
     }
 
-    private void tilt(){
+    /*private void tilt(){
         if(gamepad2.dpad_left){
-            hw.wrist.setPosition(-1);
+            hw.tilt.setPosition(0);
         }
         else if (gamepad2.dpad_right){
-            hw.wrist.setPosition(0.3);
+            hw.tilt.setPosition(0.4);
         }
-    }
+    }*/
 //avi is rly stinky
     private void wrist(){
-        if(gamepad2.x)
-            hw.tilt.setPosition(0);
+        //if(gamepad2.x)
+            //hw.wrist.setPosition(0);
 
-        if(gamepad2.y)
-            hw.tilt.setPosition(1);
+        //if(gamepad2.y)
+            //hw.wrist.setPosition(1);
     }
 
     private void arms() {
         if (gamepad2.b) {
-            hw.arm1.setPosition(0.11);
-            hw.arm2.setPosition(0.11);
-            hw.tilt.setPosition(1);
+            hw.arm1.setPosition(0);
+            hw.arm2.setPosition(0.06);
+            //hw.tilt.setPosition(1);
+            hw.wrist.setPosition(0);
             telemetry.addLine("arm1 at 0.5");
             telemetry.update();
 
             //up scoring on wrong side
         }
         else if (gamepad2.a) {
-            hw.arm1.setPosition(0.66); //.56
-            hw.arm2.setPosition(0.23); //0.39
-            hw.tilt.setPosition(0);
+            hw.arm1.setPosition(0.45); //.56
+            hw.arm2.setPosition(0.54); //0.39
+            //hw.tilt.setPosition(0);
+            hw.wrist.setPosition(0);
 
             //down picking up wrong side
 
@@ -219,17 +221,17 @@ public class TFod extends LinearOpMode {
             telemetry.addLine("arm2 at 0.5");
             telemetry.update();
         }
-        else if(gamepad2.dpad_down){
-            hw.arm1.setPosition(0.34);
-            hw.arm2.setPosition(0.16);
-            hw.wrist.setPosition(0.3);
-            hw.tilt.setPosition(1);
+        else if(gamepad2.x){
+            hw.arm1.setPosition(0.2);
+            hw.arm2.setPosition(0.24);
+            //hw.tilt.setPosition(0);
+            hw.wrist.setPosition(0.15);
         }
-        else if(gamepad2.dpad_up){
-            hw.arm1.setPosition(0.48);
-            hw.arm2.setPosition(0.18);
-            hw.wrist.setPosition(0.35);
-            hw.tilt.setPosition(1);
+        else if(gamepad2.y){
+            hw.arm1.setPosition(0.28);
+            hw.arm2.setPosition(0.35);
+            //hw.tilt.setPosition(0);
+            hw.wrist.setPosition(0.2);
         }
 
         else {
@@ -343,14 +345,14 @@ public class TFod extends LinearOpMode {
     public void scoreMacro1(){
         hw.arm1.setPosition(1);
         hw.arm2.setPosition(1);
-        hw.tilt.setPosition(0);
+        //hw.tilt.setPosition(0);
         hw.wrist.setPosition(0);
     }
     public void scoreMacro2(){
         hw.arm1.setPosition(1); //
         hw.arm2.setPosition(1);
 
-        hw.tilt.setPosition(0);
+        //hw.tilt.setPosition(0);
         hw.wrist.setPosition(0);
     }
     public void intakeMacro1(){

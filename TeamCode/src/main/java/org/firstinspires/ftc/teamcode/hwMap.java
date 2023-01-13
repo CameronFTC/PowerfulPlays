@@ -31,7 +31,7 @@ public class hwMap {
     public Servo arm2;
     public Servo claw;
     public Servo wrist;
-    public Servo tilt;
+    //public Servo tilt;
     /*public CRServo roller1;
     public CRServo roller2;*/
 
@@ -84,7 +84,7 @@ public class hwMap {
 
         claw = opmode.hardwareMap.get(Servo.class, "claw");
         wrist = opmode.hardwareMap.get(Servo.class, "wrist");
-        tilt = opmode.hardwareMap.get(Servo.class, "tilt");
+        //tilt = opmode.hardwareMap.get(Servo.class, "tilt");
         /*roller1 = opmode.hardwareMap.get(CRServo.class, "roller1");
         roller2 = opmode.hardwareMap.get(CRServo.class, "roller2");*/
 
