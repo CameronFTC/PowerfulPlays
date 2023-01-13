@@ -51,7 +51,6 @@ public class hwMap {
         }
     };
 
-
     private Runnable pickUp = new Runnable()
     {
         @Override
@@ -73,25 +72,46 @@ public class hwMap {
         }
     };
 
+    private Runnable stackRun = new Runnable()
+    {
+        @Override
+        public void run() {
+
+            tilt.setPosition(0.7);
+
+            ElapsedTime timer = new ElapsedTime();
+            timer.startTime();
+            int waitC = 0;
+
+            while(timer.seconds() < 0.3){
+                waitC ++;
+
+            }
+
+            arm1.setPosition(0.57);
+            arm2.setPosition(0.7);
+        }
+    };
+
     private Runnable lowScore = new Runnable()
     {
         @Override
         public void run() {
 
-            arm1.setPosition(0.36); //mid pick up
-            arm2.setPosition(0.49); //0.39
+            arm1.setPosition(0.37); //mid pick up
+            arm2.setPosition(0.5); //0.39
 
 
             ElapsedTime timer = new ElapsedTime();
             timer.startTime();
             int waitC = 0;
 
-            while(timer.seconds() < 0.35){
+            while(timer.seconds() < 0.3){
                 waitC ++;
 
             }
 
-            tilt.setPosition(0.37);
+            tilt.setPosition(0.45);
         }
     };
 
@@ -100,8 +120,8 @@ public class hwMap {
         @Override
         public void run() {
 
-            arm1.setPosition(0.1); //mid pick up
-            arm2.setPosition(0.23);
+            arm1.setPosition(0.15); //mid pick up
+            arm2.setPosition(0.28);
 
 
             ElapsedTime timer = new ElapsedTime();
@@ -113,7 +133,7 @@ public class hwMap {
 
             }
 
-            tilt.setPosition(0.35);
+            tilt.setPosition(0.37);
         }
     };
 
@@ -160,6 +180,7 @@ public class hwMap {
     public Thread lowGoalThread;
     public Thread midGoalThread;
     public Thread resetThread;
+    public Thread stack;
 
 
 
@@ -218,6 +239,7 @@ public class hwMap {
         lowGoalThread = new Thread(lowScore);
         midGoalThread = new Thread(midScore);
         resetThread = new Thread(resetArm);
+        stack = new Thread(stackRun);
 
 
         //driveTrain.srvMarker.setPosition(1);

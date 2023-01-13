@@ -17,6 +17,8 @@ public class RightSideAuto extends LinearOpMode {
             //SAMPLE HERE
             parkDist = vision.sample();
 
+            hw.claw.setPosition(0);
+
             telemetry.addData("Position", parkDist);
             telemetry.addData("Position", "Inside of Left Wheel on right side of tile line");
 
@@ -26,41 +28,70 @@ public class RightSideAuto extends LinearOpMode {
         }
 
        while(opModeIsActive()){
-           hw.goStraightPID2(-1000, 0.0037, 0.00000005, 0.05, 4000, -0.7, -1);
+           hw.goStraightPID2(-1310, 0.0005, 0.0000001, 0.03, 4000, -0.7, -1);
 
-           hw.lowGoalThread.start();
+           hw.midGoalThread.start();
 
-           hw.turnPID(0.675, 35, 0.63/35, 1.5, 0.0006, 4);
+           sleep(500);
 
+           hw.turnPID(0.675, -36, 0.62/36, 0.6, 0.0006, 4);
 
-           sleep(2000);
+           hw.goStraightPID2(80, 0.008, 0.00005, 0.03, 4000, 0.7, -1);
+
+           sleep(1000);
 
            hw.claw.setPosition(1);
 
            sleep(3000);
 
 
-           hw.turnPID(0.675, 49, 0.62/50, 0.5, 0.0006, 4);
+
+           hw.turnPID(0.675, 123.5, 0.7/125, 0.75, 0.0006, 4);
+
            sleep(100);
 
-           hw.goStraightPID2(395, 0.0017, 0.00000005, 0.0005, 4000, -0.7, 1);
+           hw.stack.start();
 
-           //hw.claw.setPosition(0);
+
+           //put arm code
+
+           hw.goStraightPID2(300, 0.0022, 0.00001, 0.001, 4000, 0.7, -1);
+
+           hw.claw.setPosition(0);
 
            sleep(3000);
 
-           hw.goStraightPID2(-395, 0.0017, 0.00000005, 0.05, 4000, -0.7, -1);
+           hw.tilt.setPosition(1);
+           sleep(100);
 
-           hw.turnPID(-0.675, -50, 0.65/50, 0.0005, 0.0006, 4);
+           hw.goStraightPID2(-380, 0.0009, 0.0001, 0.001, 4000, -0.7, -1);
+
+           hw.lowGoalThread.start();
+
+           sleep(500);
+
+           hw.turnPID(0.675, -36, 0.62/36, 0.6, 0.0006, 4);
+
+           sleep(200);
+
+           hw.goStraightPID2(80, 0.004, 0.00005, 0.03, 4000, 0.7, -1);
+
+           sleep(100);
+
+           hw.claw.setPosition(1);
+
+           sleep(100);
+
+           hw.goStraightPID2(-80, 0.004, 0.00006, 0.03, 4000, -0.7, -1);
+
+           sleep(100);
+
+           hw.turnPID(0.675, 36, 0.62/36, 0.6, 0.0006, 4);
 
            sleep(3000);
 
-           hw.turnPID(0.675, -35, 0.63/35, 1.5, 0.0006, 4);
 
-           sleep(1000);
-
-           //hw.goStraightPID2(-500, 0.0037, 0.00000005, 0.05, 4000, -0.7, -1);
-
+        telemetry.addData("after this point the robot is making thinsg up", 0);
            /*hw.goStraightPID(-190, 0, 0, 0.0, 4000, -0.7);
 
            sleep(100)
@@ -119,16 +150,13 @@ public class RightSideAuto extends LinearOpMode {
                    break;
                case "red":
                    //hw.goStraightPID(165, 0.003, 0.000001, 0.05, 2000, 0.8);
-                   hw.goStrafePID(800, 0.0008, 0.000001, 0.0004, 4000, 0.8);
+                   //hw.goStrafePID(800, 0.0008, 0.000001, 0.0004, 4000, 0.8);
                    break;
 
                case "green":
-                   hw.goStrafePID(-800, 0.0008, 0.000001, 0.0004, 4000, 0.8);
+                   //hw.goStrafePID(-800, 0.0008, 0.000001, 0.0004, 4000, -0.8);
                    break;
            }
-
-           hw.goStrafePID(800, 0.0008, 0.000001, 0.04, 4000, 0.8);
-           sleep(30000);
 
 
 //        if(pos == 2){
@@ -139,6 +167,8 @@ public class RightSideAuto extends LinearOpMode {
 //            hw.turnPID(0.7, -90, 0.7 / 90, 0.00000148148, 0.000038, 2);
 //            hw.goStraightPID(1200, 0.0045, 0.0000023, 0.05, 2000, 0.6);
 //        }
+
+           break;
        }
     }
 }
