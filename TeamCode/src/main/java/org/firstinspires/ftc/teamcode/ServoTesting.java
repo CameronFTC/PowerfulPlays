@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -12,11 +11,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.hwMap;
 
 import java.util.List;
 
-@TeleOp(name = "TFod", group = "Concept")
-public class TFod extends LinearOpMode {
+@TeleOp(name = "Servo Tests", group = "Concept")
+public class ServoTesting extends LinearOpMode {
 
     /*
      * Specify the source for the Tensor Flow Model.
@@ -26,14 +26,6 @@ public class TFod extends LinearOpMode {
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
     hwMap hw;
-    private static final String TFOD_MODEL_ASSET = "PowerPlay.tflite";
-    // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
-
-    private static final String[] LABELS = {
-            "1 Bolt",
-            "2 Bulb",
-            "3 Panel"
-    };
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -47,22 +39,6 @@ public class TFod extends LinearOpMode {
      * Once you've obtained a license key, copy the string from the Vuforia web site
      * and paste it in to your code on the next line, between the double quotes.
      */
-
-    private static final String VUFORIA_KEY =
-            "AYJgkfL/////AAABmcsn/oH17E7rnb8XOyK+cQ9M7dpMRcwsAJNBt7Alqtqd7YIuijBbIlVZFA2yOOS95e7ZssiuuHUvDuw4W/7YfOPV6YW4gsBeuzq1/lKxn8i1PmomRFm9QrnCIoUWmvkgavhv+HGcO1om007ZIm+S62AwAmmqRrbJ8De2eOoOa1n5i2EZg2belVSaD158qE8RkJkaV9Nv38c/DyVDRsXiV6mlGU79TOAYasMix/dTA9VZuOzsaB+kUgM2bchMY8q5pEOehASGo3+P5TiYhAOsJ4SDLGnOt8JyUL1JbFyNkFjvJkna4rtCa6HkJB0DV9Nh84dZmQ8gkLAtfSqaLyY6KD32TytXC5XfFzdRhLsrVnRt";
-
-    /**
-     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
-     * localization engine.
-     */
-
-    private VuforiaLocalizer vuforia;
-
-    /**
-     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
-     * Detection engine.
-     */
-    private TFObjectDetector tfod;
 
 
     private Runnable liftUp = new Runnable() {
@@ -81,24 +57,6 @@ public class TFod extends LinearOpMode {
 
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
-        initVuforia();
-        initTfod();
-
-        /**
-         * Activate TensorFlow Object Detection before we wait for the start command.
-         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
-         **/
-        if (tfod != null) {
-            tfod.activate();
-
-            // The TensorFlow software will scale the input images from the camera to a lower resolution.
-            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
-            // If your target is at distance greater than 50 cm (20") you can increase the magnification value
-            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
-            // should be set to the value of the images used to create the TensorFlow Object Detection model
-            // (typically 16/9).
-            tfod.setZoom(1.0, 16.0/9.0);
-        }
 
         hw.liftEncoderGlobal = hw.lift.getCurrentPosition();
         currGyro =  hw.getAngle();
@@ -109,53 +67,18 @@ public class TFod extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        double col = 0;
-        double row = 0;
-        double width = 0;
-        double height = 0;
         double error = 0;
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                        // step through the list of recognitions and display image position/size information for each one
-                        // Note: "Image number" refers to the randomized image orientation/number
-                        for (Recognition recognition : updatedRecognitions) {
-                            col = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                            row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-                            width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
-                            height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
-
-                            telemetry.addData(""," ");
-                            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
-                            telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
-                            telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
-
-                            telemetry.addData("error from object:", error);
-                            telemetry.addData("side 1: ", Math.abs(270 - col)/96.0);
-                            telemetry.addData("side 2: ", -5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97);
-                            //-0.00005904x^5 + 0.19x^2 -2.069X + 89.97
-                        }
-
-                        error = getHeading(width, height, col, row) * 0.025;
-
-                        if (updatedRecognitions.size() == 0){
-                            error = 0;
-                        }
-
                         trigMecanum(error);
                         liftNow();
                         //rollers();
                         claw();
+                        wrist();
+                        tilt();
+                        arms();
                         macros();
-                    }
-                }
             }
         }
     }
@@ -177,28 +100,67 @@ public class TFod extends LinearOpMode {
         }
     }
 
-    private void wrist(){
-        if(gamepad2.x)
-            hw.tilt.setPosition(0);
+    private void tilt(){
+        if(gamepad2.dpad_left){
+            hw.wrist.setPosition(-1);
+        }
+        else if (gamepad2.dpad_right){
+            hw.wrist.setPosition(1);
+        }
+    }
 
-        if(gamepad2.y)
-            hw.tilt.setPosition(1);
+    private void wrist(){
+        if(gamepad2.dpad_up)
+            hw.tilt.setPosition(0.36);
+
+        //0.4 = mid goal writs position
+
+
+        if(gamepad2.dpad_down)
+            hw.tilt.setPosition(0.8);
+    }
+
+    private void macros(){
+
+        if(gamepad1.a){
+            hw.midGoalThread.interrupt();
+            hw.lowGoalThread.interrupt();
+            hw.pickUpThread.start();
+
+        } else if(gamepad1.b){
+            hw.pickUpThread.interrupt();
+            hw.midGoalThread.interrupt();
+            hw.lowGoalThread.start();
+
+        } else if(gamepad1.y){
+            hw.pickUpThread.interrupt();
+            hw.lowGoalThread.interrupt();
+            hw.midGoalThread.start();
+        }
     }
 
     private void arms() {
         if (gamepad2.b) {
-            hw.arm1.setPosition(0.1);
-            hw.arm2.setPosition(0.1);
-            hw.tilt.setPosition(0);
-            telemetry.addLine("arm1 at 0.5");
-            telemetry.update();
+            hw.arm1.setPosition(1); // ground pick up
+            hw.arm2.setPosition(1);
 
-            //up scoring on wrong side
         }
         else if (gamepad2.a) {
-            hw.arm1.setPosition(1); //.56
-            hw.arm2.setPosition(1); //0.39
-            hw.tilt.setPosition(1);
+            hw.arm1.setPosition(0); //past high score
+            hw.arm2.setPosition(0);
+
+        }
+
+        else if (gamepad2.x) {
+            hw.arm1.setPosition(0.5); //low pick up
+            hw.arm2.setPosition(0.65); //0.39
+
+        }
+
+        else if (gamepad2.y) {
+            hw.arm1.setPosition(0.35); //mid pick up
+            hw.arm2.setPosition(0.5); //0.39
+            //hw.tilt.setPosition(1);
 
             //down picking up wrong side
 
@@ -206,7 +168,7 @@ public class TFod extends LinearOpMode {
 
 
             //hw.arm2.setPosition(0.5);
-            telemetry.addLine("arm2 at 0.5");
+            telemetry.addLine("arm at mid");
             telemetry.update();
         }
 
@@ -272,60 +234,10 @@ public class TFod extends LinearOpMode {
 
     }
 
-    private void macros(){
-
-        if(gamepad2.a){
-            hw.midGoalThread.interrupt();
-            hw.lowGoalThread.interrupt();
-            hw.pickUpThread.start();
-
-        } else if(gamepad2.b){
-            hw.pickUpThread.interrupt();
-            hw.midGoalThread.interrupt();
-            hw.lowGoalThread.start();
-
-        } else if(gamepad2.y){
-            hw.pickUpThread.interrupt();
-            hw.lowGoalThread.interrupt();
-            hw.midGoalThread.start();
-        }
-    }
-
     /*private void rollers(){
             hw.roller1.setPower(-(gamepad2.right_trigger - gamepad2.left_trigger));
             hw.roller2.setPower(-(gamepad2.right_trigger - gamepad2.left_trigger));
     }*/
-
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-    }
-
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.75f;
-        tfodParameters.isModelTensorFlow2 = true;
-        tfodParameters.inputSize = 300;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-
-        // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
-        // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-        // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
-    }
 
     public double getHeading(double width, double height, double col, double row){
         //FIND CONSTANT

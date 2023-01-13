@@ -14,12 +14,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class hwMap {
 
-    /*
-        silly little to do list
-        -roadrunner
-
-
-     */
     public DcMotor bR;
     public DcMotor fR;
     public DcMotor fL;
@@ -30,7 +24,7 @@ public class hwMap {
     public Servo arm1;
     public Servo arm2;
     public Servo claw;
-    public Servo wrist;
+    public Servo tilt;
     //public Servo tilt;
     /*public CRServo roller1;
     public CRServo roller2;*/
@@ -58,12 +52,111 @@ public class hwMap {
     };
 
 
+    private Runnable pickUp = new Runnable()
+    {
+        @Override
+        public void run() {
+
+            tilt.setPosition(0.8);
+
+            ElapsedTime timer = new ElapsedTime();
+            timer.startTime();
+            int waitC = 0;
+
+            while(timer.seconds() < 0.3){
+                waitC ++;
+
+            }
+
+            arm1.setPosition(1);
+            arm2.setPosition(1);
+        }
+    };
+
+    private Runnable lowScore = new Runnable()
+    {
+        @Override
+        public void run() {
+
+            arm1.setPosition(0.33); //mid pick up
+            arm2.setPosition(0.46); //0.39
+
+
+            ElapsedTime timer = new ElapsedTime();
+            timer.startTime();
+            int waitC = 0;
+
+            while(timer.seconds() < 0.35){
+                waitC ++;
+
+            }
+
+            tilt.setPosition(0.37);
+        }
+    };
+
+    private Runnable midScore = new Runnable()
+    {
+        @Override
+        public void run() {
+
+            arm1.setPosition(0.1); //mid pick up
+            arm2.setPosition(0.23);
+
+
+            ElapsedTime timer = new ElapsedTime();
+            timer.startTime();
+            int waitC = 0;
+
+            while(timer.seconds() < 0.2){
+                waitC ++;
+
+            }
+
+            tilt.setPosition(0.38);
+
+            arm1.setPosition(1); //mid pick up
+            arm2.setPosition(1);
+        }
+    };
+
+    private Runnable resetArm = new Runnable()
+    {
+        @Override
+        public void run() {
+
+            arm1.setPosition(0.5); //mid pick up
+            arm2.setPosition(0.5);
+
+
+            ElapsedTime timer = new ElapsedTime();
+            timer.startTime();
+            int waitC = 0;
+
+            while(timer.seconds() < 0.2){
+                waitC ++;
+
+            }
+
+            tilt.setPosition(0.8);
+        }
+    };
+
+
+
 
     LinearOpMode opmode;
     ElapsedTime runtime = new ElapsedTime();
 
     private Thread outtakeThread;
-    private Thread liftThread;
+
+
+    public Thread pickUpThread;
+    public Thread lowGoalThread;
+    public Thread midGoalThread;
+
+
+
 
     public hwMap(LinearOpMode opmode) {
         this.opmode = opmode;
@@ -83,7 +176,7 @@ public class hwMap {
         liftEncoderGlobal = 0;
 
         claw = opmode.hardwareMap.get(Servo.class, "claw");
-        wrist = opmode.hardwareMap.get(Servo.class, "wrist");
+        tilt = opmode.hardwareMap.get(Servo.class, "wrist");
         //tilt = opmode.hardwareMap.get(Servo.class, "tilt");
         /*roller1 = opmode.hardwareMap.get(CRServo.class, "roller1");
         roller2 = opmode.hardwareMap.get(CRServo.class, "roller2");*/
@@ -115,6 +208,10 @@ public class hwMap {
         //turretTurn = new Thread(turningTurret);
         outtakeThread = new Thread(autoOuttake);
 
+        pickUpThread = new Thread(pickUp);
+        lowGoalThread = new Thread(lowScore);
+        midGoalThread = new Thread(midScore);
+
 
         //driveTrain.srvMarker.setPosition(1);
 
@@ -131,10 +228,6 @@ public class hwMap {
         opmode.telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
         opmode.telemetry.update();
 
-    }
-
-    public void setThread(Runnable run2){
-        liftThread = new Thread(run2);
     }
 
 
