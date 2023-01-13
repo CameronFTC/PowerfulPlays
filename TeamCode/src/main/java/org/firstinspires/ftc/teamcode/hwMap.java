@@ -78,8 +78,8 @@ public class hwMap {
         @Override
         public void run() {
 
-            arm1.setPosition(0.33); //mid pick up
-            arm2.setPosition(0.46); //0.39
+            arm1.setPosition(0.36); //mid pick up
+            arm2.setPosition(0.49); //0.39
 
 
             ElapsedTime timer = new ElapsedTime();
@@ -113,10 +113,7 @@ public class hwMap {
 
             }
 
-            tilt.setPosition(0.38);
-
-            arm1.setPosition(1); //mid pick up
-            arm2.setPosition(1);
+            tilt.setPosition(0.35);
         }
     };
 
@@ -133,12 +130,20 @@ public class hwMap {
             timer.startTime();
             int waitC = 0;
 
-            while(timer.seconds() < 0.2){
+            while(timer.seconds() < 0.5){
                 waitC ++;
 
             }
 
             tilt.setPosition(0.8);
+
+            while(timer.seconds() < 0.7){
+                waitC ++;
+
+            }
+
+            arm1.setPosition(1); //mid pick up
+            arm2.setPosition(1);
         }
     };
 
@@ -154,6 +159,7 @@ public class hwMap {
     public Thread pickUpThread;
     public Thread lowGoalThread;
     public Thread midGoalThread;
+    public Thread resetThread;
 
 
 
@@ -211,6 +217,7 @@ public class hwMap {
         pickUpThread = new Thread(pickUp);
         lowGoalThread = new Thread(lowScore);
         midGoalThread = new Thread(midScore);
+        resetThread = new Thread(resetArm);
 
 
         //driveTrain.srvMarker.setPosition(1);
@@ -683,7 +690,6 @@ public class hwMap {
         resetEncoders();
         timer.startTime();
 
-        double oldGyro = getAngle();
         double power;
         double start = getAngle();
         double error = 0;
@@ -703,7 +709,7 @@ public class hwMap {
 
             proportional = (distance - travel) * kP;
             integral += (travel - (getAvgEncoderStrafe() - startPlace)) * (currTime - oldTime) * kI;
-            derivative = (getAngle() - oldGyro) * kD;
+            derivative = getTrueDiff(start) * kD;
             power = integral + proportional + derivative;
 
             error = getTrueDiff(start);
@@ -738,18 +744,10 @@ public class hwMap {
             if (currTime > timeout) {
                 break;
             }
-
-            oldGyro = getAngle();
         }
-
 
         stopAll();
     }
-
-
-
-
-
 
     public void goStraightPID2(double distance, double kP, double kI, double kD, double timeout, double max, double negative){
         ElapsedTime time = new ElapsedTime();
@@ -778,8 +776,6 @@ public class hwMap {
 
         while(Math.abs(distance) > Math.abs(getAvgEncoder()) && !opmode.isStopRequested()){
             currentTime = time.milliseconds();
-            opmode.telemetry.addLine("ok straight now");
-            opmode.telemetry.update();
 
             proportional = (distance - getAvgEncoder()) * kP;
             integral += (distance - getAvgEncoder()) * (currentTime - pastTime) * kI;

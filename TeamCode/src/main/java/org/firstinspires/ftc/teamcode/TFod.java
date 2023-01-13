@@ -277,18 +277,28 @@ public class TFod extends LinearOpMode {
         if(gamepad2.a){
             hw.midGoalThread.interrupt();
             hw.lowGoalThread.interrupt();
+            hw.resetThread.interrupt();
             hw.pickUpThread.start();
 
         } else if(gamepad2.b){
             hw.pickUpThread.interrupt();
             hw.midGoalThread.interrupt();
+            hw.resetThread.interrupt();
             hw.lowGoalThread.start();
 
         } else if(gamepad2.y){
             hw.pickUpThread.interrupt();
             hw.lowGoalThread.interrupt();
+            hw.resetThread.interrupt();
             hw.midGoalThread.start();
+
+        }  else if(gamepad2.x){
+            hw.pickUpThread.interrupt();
+            hw.lowGoalThread.interrupt();
+            hw.midGoalThread.interrupt();
+            hw.resetThread.start();
         }
+
     }
 
     /*private void rollers(){

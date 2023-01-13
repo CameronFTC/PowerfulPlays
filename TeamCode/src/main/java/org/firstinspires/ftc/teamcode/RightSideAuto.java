@@ -28,19 +28,22 @@ public class RightSideAuto extends LinearOpMode {
        while(opModeIsActive()){
            hw.goStraightPID2(-1000, 0.0037, 0.00000005, 0.05, 4000, -0.7, -1);
 
-           hw.startOuttakeThread(0.1);
-           sleep(100);
+           hw.lowGoalThread.start();
 
            hw.turnPID(0.675, 35, 0.63/35, 1.5, 0.0006, 4);
 
-           //hw.claw.setPosition(1);
+
+           sleep(2000);
+
+           hw.claw.setPosition(1);
 
            sleep(3000);
+
 
            hw.turnPID(0.675, 49, 0.62/50, 0.5, 0.0006, 4);
            sleep(100);
 
-           hw.goStraightPID2(395, 0.0017, 0.00000005, 0.05, 4000, 0.7, 1);
+           hw.goStraightPID2(395, 0.0017, 0.00000005, 0.0005, 4000, -0.7, 1);
 
            //hw.claw.setPosition(0);
 
@@ -116,11 +119,11 @@ public class RightSideAuto extends LinearOpMode {
                    break;
                case "red":
                    //hw.goStraightPID(165, 0.003, 0.000001, 0.05, 2000, 0.8);
-                   hw.goStrafePID(800, 0.0008, 0.000001, 0.04, 4000, 0.8);
+                   hw.goStrafePID(800, 0.0008, 0.000001, 0.0004, 4000, 0.8);
                    break;
 
                case "green":
-                   hw.goStrafePID(-800, 0.0008, 0.000001, 0.04, 4000, 0.8);
+                   hw.goStrafePID(-800, 0.0008, 0.000001, 0.0004, 4000, 0.8);
                    break;
            }
 
