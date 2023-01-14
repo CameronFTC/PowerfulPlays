@@ -56,7 +56,7 @@ public class hwMap {
         @Override
         public void run() {
 
-            tilt.setPosition(0.8);
+            tilt.setPosition(0.53);
 
             ElapsedTime timer = new ElapsedTime();
             timer.startTime();
@@ -67,8 +67,8 @@ public class hwMap {
 
             }
 
-            arm1.setPosition(1);
-            arm2.setPosition(1);
+            arm1.setPosition(0.75);
+            arm2.setPosition(0.88);
         }
     };
 
@@ -77,7 +77,7 @@ public class hwMap {
         @Override
         public void run() {
 
-            tilt.setPosition(0.7);
+            tilt.setPosition(0.4);
 
             ElapsedTime timer = new ElapsedTime();
             timer.startTime();
@@ -99,7 +99,7 @@ public class hwMap {
         public void run() {
 
             arm1.setPosition(0.37); //mid pick up
-            arm2.setPosition(0.5); //0.39
+            arm2.setPosition(0.50); //0.39
 
 
             ElapsedTime timer = new ElapsedTime();
@@ -111,7 +111,7 @@ public class hwMap {
 
             }
 
-            tilt.setPosition(0.45);
+            tilt.setPosition(0.2);
         }
     };
 
@@ -120,8 +120,8 @@ public class hwMap {
         @Override
         public void run() {
 
-            arm1.setPosition(0.15); //mid pick up
-            arm2.setPosition(0.28);
+            arm1.setPosition(0.22); //mid pick up
+            arm2.setPosition(0.35);
 
 
             ElapsedTime timer = new ElapsedTime();
@@ -133,7 +133,7 @@ public class hwMap {
 
             }
 
-            tilt.setPosition(0.37);
+            tilt.setPosition(0.12);
         }
     };
 
