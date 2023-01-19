@@ -26,13 +26,11 @@ public class TFod extends LinearOpMode {
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
     hwMap hw;
-    private static final String TFOD_MODEL_ASSET = "PowerPlay.tflite";
+    private static final String TFOD_MODEL_ASSET = "BlueConeModel.tflite";
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
     private static final String[] LABELS = {
-            "1 Bolt",
-            "2 Bulb",
-            "3 Panel"
+            "Blue_Cone"
     };
 
     /*
@@ -139,11 +137,11 @@ public class TFod extends LinearOpMode {
 
                             telemetry.addData("error from object:", error);
                             telemetry.addData("side 1: ", Math.abs(270 - col)/96.0);
-                            telemetry.addData("side 2: ", -5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97);
+                            telemetry.addData("side 2: ", ((0.0006 * width * width) - (0.3291 * width) + 57.7663));
                             //-0.00005904x^5 + 0.19x^2 -2.069X + 89.97
                         }
 
-                        error = getHeading(width, height, col, row) * 0.025;
+                        error = getHeading(width, height, col, row) * -0.05;
 
                         if (updatedRecognitions.size() == 0){
                             error = 0;
@@ -339,7 +337,9 @@ public class TFod extends LinearOpMode {
 
     public double getHeading(double width, double height, double col, double row){
         //FIND CONSTANT
-        double heading = Math.toDegrees(Math.atan(((Math.abs(270 - col)/96.0)/ (-5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97))));
+        double heading = Math.toDegrees(Math.atan(((Math.abs(270 - col)/96.0)/ ((0.0006 * width * width) - (0.3291 * width) + 57.7663))));
+
+                //(-5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97))));
 
         if (col < 270)
             heading *= -1;
@@ -370,10 +370,10 @@ public class TFod extends LinearOpMode {
 
         telemetry.update();
 
-        hw.fL.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x *  0.75)) * 0.65);
-        hw.fR.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75)) * 0.65);
-        hw.bL.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75)) * 0.65);
-        hw.bR.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75)) * 0.65);
+        hw.fL.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x *  0.75)) * 0.65 + error);
+        hw.fR.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75)) * 0.65 - error);
+        hw.bL.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75)) * 0.65 + error);
+        hw.bR.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75)) * 0.65 - error);
 
         /*double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;
         double leftstickx = -gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x);
