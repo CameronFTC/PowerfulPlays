@@ -141,7 +141,11 @@ public class TFod extends LinearOpMode {
                             //-0.00005904x^5 + 0.19x^2 -2.069X + 89.97
                         }
 
-                        error = getHeading(width, height, col, row) * -0.05;
+                        if(gamepad1.a) {
+                            error = getHeading(width, height, col, row) * -0.03;
+                        } else {
+                            error = 0;
+                        }
 
                         if (updatedRecognitions.size() == 0){
                             error = 0;
@@ -338,14 +342,14 @@ public class TFod extends LinearOpMode {
     public double getHeading(double width, double height, double col, double row){
         //FIND CONSTANT
         double heading = Math.toDegrees(Math.atan(((Math.abs(270 - col)/96.0)/ ((0.0006 * width * width) - (0.3291 * width) + 57.7663))));
-
-                //(-5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97))));
-
         if (col < 270)
             heading *= -1;
 
         return -heading;
     }
+
+    //(-5.904 * Math.pow(10, -5) * Math.pow(width, 3) + 0.019 * Math.pow(width, 2) - 2.069 * width + 89.97))));
+
 
     boolean turn = false;
 
