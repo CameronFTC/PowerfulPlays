@@ -26,7 +26,7 @@ public class TFodRedCone extends LinearOpMode {
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
     hwMap hw;
-    private static final String TFOD_MODEL_ASSET = "BlueConeModel.tflite";
+    private static final String TFOD_MODEL_ASSET = "RedConePole.tflite";
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
     private static final String[] LABELS = {
