@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -72,10 +73,28 @@ public class TFod extends LinearOpMode {
 
     private double currGyro;
 
+    public enum LiftHeight{
+        TEST,
+        GROUND,
+        LOW,
+        MEDIUM,
+        HIGH,
+        STACK
+    };
+
+    final int lowHeight = 600;
+    final int mediumHeight = 900;
+    final int highHeight = 2000;
+    final int stackHeight = 500;
+
 
     @Override
     public void runOpMode() {
         hw = new hwMap(this);
+        LiftHeight lift = LiftHeight.TEST;
+        ElapsedTime liftTimer = new ElapsedTime();
+        hw.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hw.lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
@@ -105,6 +124,7 @@ public class TFod extends LinearOpMode {
         // Wait for the game to begin
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
+        liftTimer.reset();
         waitForStart();
 
         double col = 0;
@@ -155,7 +175,85 @@ public class TFod extends LinearOpMode {
                         liftNow();
                         //rollers();
                         claw();
+                        //hw.pickUpThread.start();
+                        //hw.pickUpThread.start();
+
                         macros();
+
+                        switch(lift){
+                            case TEST:
+                                break;
+                            case GROUND:
+                                if(gamepad2.y) {
+                                    lift = LiftHeight.HIGH;
+                                }
+                                else if(gamepad2.b) {
+                                    lift = LiftHeight.MEDIUM;
+                                }
+                                else if(gamepad2.x) {
+                                    lift = LiftHeight.STACK;
+                                }
+                                else if(gamepad2.a) {
+                                    lift = LiftHeight.LOW;
+                                }
+                                break;
+                            case LOW:
+                                if(Math.abs(lowHeight - hw.lift.getCurrentPosition()) > 30){
+                                    hw.lift.setPower(1 * Math.signum(lowHeight - hw.lift.getCurrentPosition()));
+                                    hw.lift2.setPower(1 * Math.signum(lowHeight - hw.lift.getCurrentPosition()));
+                                }
+                                else{
+                                    hw.lift.setPower(0);
+                                    hw.lift2.setPower(0);
+                                    lift = LiftHeight.GROUND;
+                                }
+                                break;
+                            case MEDIUM:
+                                if(Math.abs(mediumHeight - hw.lift.getCurrentPosition()) > 30){
+                                    hw.lift.setPower(1 * Math.signum(mediumHeight - hw.lift.getCurrentPosition()));
+                                    hw.lift2.setPower(1 * Math.signum(mediumHeight - hw.lift.getCurrentPosition()));
+                                }
+                                else{
+                                    hw.lift.setPower(0);
+                                    hw.lift2.setPower(0);
+                                    lift = LiftHeight.GROUND;
+                                }
+                                break;
+                            case HIGH:
+                                if(Math.abs(highHeight - hw.lift.getCurrentPosition()) > 30){
+                                    hw.lift.setPower(1 * Math.signum(highHeight - hw.lift.getCurrentPosition()));
+                                    hw.lift2.setPower(1 * Math.signum(highHeight - hw.lift.getCurrentPosition()));
+                                }
+                                else{
+                                    if(!(Math.abs(gamepad2.left_stick_y) > 0.1 || Math.abs(gamepad2.right_stick_y) > 0.1)){
+                                        hw.lift.setPower(0.1);
+                                        hw.lift2.setPower(0.1);
+                                    }
+                                    else{
+                                        hw.lift.setPower(0);
+                                        hw.lift2.setPower(0);
+                                        lift = LiftHeight.GROUND;
+                                    }
+                                }
+                                break;
+                            case STACK:
+                                if(Math.abs(stackHeight - hw.lift.getCurrentPosition()) > 30){
+                                    hw.lift.setPower(1 * Math.signum(stackHeight - hw.lift.getCurrentPosition()));
+                                    hw.lift2.setPower(1 * Math.signum(stackHeight - hw.lift.getCurrentPosition()));
+                                }
+                                else{
+                                    hw.lift.setPower(0);
+                                    hw.lift2.setPower(0);
+                                    lift = LiftHeight.GROUND;
+                                }
+                                break;
+                        }
+
+                        telemetry.addData("Bl", hw.bL.getCurrentPosition());
+                        telemetry.addData("Br", hw.bR.getCurrentPosition());
+                        telemetry.addData("Fl", hw.fL.getCurrentPosition());
+                        telemetry.addData("FR", hw.fR.getCurrentPosition());
+                        telemetry.addData("lift: ", hw.lift.getCurrentPosition());
                     }
                 }
             }
@@ -168,7 +266,7 @@ public class TFod extends LinearOpMode {
 
     private void claw(){
         if(gamepad2.right_bumper){
-            hw.claw.setPosition(-1);
+            hw.claw.setPosition(0.32);
             telemetry.addLine("claw trying now open");
             telemetry.update();
         }
@@ -179,19 +277,19 @@ public class TFod extends LinearOpMode {
         }
     }
 
-    private void wrist(){
+   /* private void wrist(){
         if(gamepad2.x)
             hw.tilt.setPosition(0);
 
         if(gamepad2.y)
             hw.tilt.setPosition(1);
-    }
+    }*/
 
     private void arms() {
         if (gamepad2.b) {
             hw.arm1.setPosition(0.1);
             hw.arm2.setPosition(0.1);
-            hw.tilt.setPosition(0);
+            //hw.tilt.setPosition(0);
             telemetry.addLine("arm1 at 0.5");
             telemetry.update();
 
@@ -200,7 +298,7 @@ public class TFod extends LinearOpMode {
         else if (gamepad2.a) {
             hw.arm1.setPosition(1); //.56
             hw.arm2.setPosition(1); //0.39
-            hw.tilt.setPosition(1);
+            //hw.tilt.setPosition(1);
 
             //down picking up wrong side
 
@@ -222,15 +320,23 @@ public class TFod extends LinearOpMode {
 
     private void liftNow(){
         //telemetry.addLine("lift is working!!!!!! woo hoo");
-        if(gamepad2.left_stick_y > 0.1){
+
+        if(gamepad2.left_stick_y < 0.1){
             hw.lift.setPower(-gamepad2.left_stick_y);
             hw.lift2.setPower(-gamepad2.left_stick_y);
         }
-        else{
+        else if(gamepad2.left_stick_y > -0.1){
             hw.lift.setPower(-gamepad2.left_stick_y * 0.6);
             hw.lift2.setPower(-gamepad2.left_stick_y * 0.6);
         }
-
+        else if(gamepad2.right_stick_y > 0.1){
+            hw.lift.setPower(-gamepad2.right_stick_y * 0.3);
+            hw.lift2.setPower(-gamepad2.right_stick_y * 0.3);
+        }
+        else{
+            hw.lift.setPower(-gamepad2.right_stick_y * 0.15);
+            hw.lift2.setPower(-gamepad2.right_stick_y * 0.15);
+        }
 
         //hw.lift.setPower(0.5);
         double target;

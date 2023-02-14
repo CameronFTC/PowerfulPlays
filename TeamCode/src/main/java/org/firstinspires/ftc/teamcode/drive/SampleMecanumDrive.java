@@ -54,10 +54,10 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0.75, 0, 0.25);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(7.8, 0, 0.25);
 
-    public static double LATERAL_MULTIPLIER = 1;
+    public static double LATERAL_MULTIPLIER = 1.276 * (41.128 / 49.0625);
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -123,8 +123,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "bR");
         rightFront = hardwareMap.get(DcMotorEx.class, "fR");
 
-        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         for (DcMotorEx motor : motors) {
@@ -147,8 +147,6 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-
-        setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
