@@ -25,7 +25,7 @@ public class hwMap {
     public Servo arm2;
     public Servo claw;
     public Servo tilt;
-    //public Servo tilt;
+    public Servo wrist;
     /*public CRServo roller1;
     public CRServo roller2;*/
 
@@ -56,7 +56,7 @@ public class hwMap {
         @Override
         public void run() {
 
-            tilt.setPosition(0.53);
+            tilt.setPosition(0.9);
 
             ElapsedTime timer = new ElapsedTime();
             timer.startTime();
@@ -67,8 +67,8 @@ public class hwMap {
 
             }
 
-            arm1.setPosition(0.75);
-            arm2.setPosition(0.88);
+            arm1.setPosition(0.85);
+            arm2.setPosition(0.85);
         }
     };
 
@@ -77,7 +77,7 @@ public class hwMap {
         @Override
         public void run() {
 
-            tilt.setPosition(0.4);
+            tilt.setPosition(0.55);
 
             ElapsedTime timer = new ElapsedTime();
             timer.startTime();
@@ -88,8 +88,8 @@ public class hwMap {
 
             }
 
-            arm1.setPosition(0.57);
-            arm2.setPosition(0.7);
+            arm1.setPosition(0.63);
+            arm2.setPosition(0.76);
         }
     };
 
@@ -98,8 +98,8 @@ public class hwMap {
         @Override
         public void run() {
 
-            arm1.setPosition(0.37); //mid pick up
-            arm2.setPosition(0.50); //0.39
+            arm1.setPosition(0.3); //mid pick up
+            arm2.setPosition(0.3); //0.39
 
 
             ElapsedTime timer = new ElapsedTime();
@@ -111,7 +111,7 @@ public class hwMap {
 
             }
 
-            tilt.setPosition(0.2);
+            tilt.setPosition(0.51);
         }
     };
 
@@ -120,8 +120,8 @@ public class hwMap {
         @Override
         public void run() {
 
-            arm1.setPosition(0.22); //mid pick up
-            arm2.setPosition(0.35);
+            arm1.setPosition(0.13); //mid pick up
+            arm2.setPosition(0.13);
 
 
             ElapsedTime timer = new ElapsedTime();
@@ -133,7 +133,8 @@ public class hwMap {
 
             }
 
-            tilt.setPosition(0.12);
+            tilt.setPosition(1);
+            wrist.setPosition(1);
         }
     };
 
@@ -163,9 +164,52 @@ public class hwMap {
             }
 
             arm1.setPosition(1); //mid pick up
-            arm2.setPosition(1);
+            //arm2.setPosition(1);
         }
     };
+
+    private Runnable runLift = new Runnable()
+    {
+        @Override
+        public void run() {
+            autoLift(600, 1 / 600, 0.3);
+        }
+    };
+
+    private Runnable runLiftDown = new Runnable()
+    {
+        @Override
+        public void run() {
+            autoLift(-600, 1 / 600, -0.3);
+        }
+    };
+
+    public void autoLift(double target, double kP, double power){
+        double pos = lift.getCurrentPosition();
+        while((Math.abs(target - pos)) >= 30){
+            double error = target - pos;
+            lift.setPower(power * kP * error);
+            lift2.setPower(power * kP * error);
+            pos = lift.getCurrentPosition();
+            opmode.telemetry.addLine("a");
+            opmode.telemetry.addData("error: ", error);
+            opmode.telemetry.update();
+        }
+        lift.setPower(0);
+        lift2.setPower(0);
+    }
+
+    public void autoOuttake(double distance, double pwr, double timeout) {
+        runtime.reset();
+        int startVal = lift.getCurrentPosition();
+        while ((Math.abs(lift.getCurrentPosition() - startVal) < distance) && opmode.opModeIsActive() && runtime.milliseconds() < timeout) {
+            lift.setPower(pwr);
+            lift2.setPower(pwr);
+        }
+        lift.setPower(0);
+        lift2.setPower(0);
+    }
+
 
 
 
@@ -181,6 +225,8 @@ public class hwMap {
     public Thread midGoalThread;
     public Thread resetThread;
     public Thread stack;
+    public Thread liftThread;
+    public Thread liftDownThread;
 
 
 
@@ -203,8 +249,8 @@ public class hwMap {
         liftEncoderGlobal = 0;
 
         claw = opmode.hardwareMap.get(Servo.class, "claw");
-        tilt = opmode.hardwareMap.get(Servo.class, "wrist");
-        //tilt = opmode.hardwareMap.get(Servo.class, "tilt");
+        wrist = opmode.hardwareMap.get(Servo.class, "wrist");
+        tilt = opmode.hardwareMap.get(Servo.class, "tilt");
         /*roller1 = opmode.hardwareMap.get(CRServo.class, "roller1");
         roller2 = opmode.hardwareMap.get(CRServo.class, "roller2");*/
 
@@ -219,6 +265,9 @@ public class hwMap {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         bR.setDirection(DcMotorSimple.Direction.REVERSE);
         fR.setDirection(DcMotorSimple.Direction.REVERSE);
+        arm1.setDirection(Servo.Direction.REVERSE);
+        lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
         arm1.setDirection(Servo.Direction.REVERSE);
 
 
@@ -240,6 +289,8 @@ public class hwMap {
         midGoalThread = new Thread(midScore);
         resetThread = new Thread(resetArm);
         stack = new Thread(stackRun);
+        liftThread = new Thread(runLift);
+        liftDownThread = new Thread(runLiftDown);
 
 
         //driveTrain.srvMarker.setPosition(1);

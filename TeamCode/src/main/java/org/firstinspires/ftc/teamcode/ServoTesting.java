@@ -75,7 +75,7 @@ public class ServoTesting extends LinearOpMode {
                         liftNow();
                         //rollers();
                         claw();
-                        wrist();
+                        //wrist();
                         arms();
                         macros();
             }
@@ -100,7 +100,7 @@ public class ServoTesting extends LinearOpMode {
     }
 
 
-    private void wrist(){
+    /*private void wrist(){
         if(gamepad2.dpad_up)
             hw.tilt.setPosition(0.36);
 
@@ -109,7 +109,7 @@ public class ServoTesting extends LinearOpMode {
 
         if(gamepad2.dpad_down)
             hw.tilt.setPosition(0.8);
-    }
+    }*/
 
     private void macros(){
 
