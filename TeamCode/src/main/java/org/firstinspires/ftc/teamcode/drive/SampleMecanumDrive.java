@@ -31,6 +31,8 @@ import org.firstinspires.ftc.teamcode.drive.opmode.TwoWheelTrackingLocalizer;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
+import org.firstinspires.ftc.teamcode.util.AxisDirection;
+import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 
 import java.util.ArrayList;
@@ -54,8 +56,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0.75, 0, 0.25);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(7.8, 0, 0.25);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(50, 0, 5);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(75, 5, 10);
 
     public static double LATERAL_MULTIPLIER = 1.276 * (41.128 / 49.0625);
 
@@ -116,7 +118,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         // and the placement of the dot/orientation from https://docs.revrobotics.com/rev-control-system/control-system-overview/dimensions#imu-location
         //
         // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
-        // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
+        //BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "fL");
         leftRear = hardwareMap.get(DcMotorEx.class, "bL");

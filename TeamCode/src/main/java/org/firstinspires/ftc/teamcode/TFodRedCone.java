@@ -30,7 +30,8 @@ public class TFodRedCone extends LinearOpMode {
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
     private static final String[] LABELS = {
-            "Blue_Cone"
+            "Red_Cone",
+            "Aim_Cone"
     };
 
     /*
@@ -135,9 +136,9 @@ public class TFodRedCone extends LinearOpMode {
                             telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
                             telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
 
-                            telemetry.addData("error from object:", error);
+                            telemetry.addData("error from object:", getHeading(width, height, col, row));
                             telemetry.addData("side 1: ", Math.abs(270 - col)/96.0);
-                            telemetry.addData("side 2: ", ((0.0006 * width * width) - (0.3291 * width) + 57.7663));
+                            telemetry.addData("side 2: ", (-6.3448878 + (4208.05466/width)));
                             //-0.00005904x^5 + 0.19x^2 -2.069X + 89.97
                         }
 
@@ -341,7 +342,7 @@ public class TFodRedCone extends LinearOpMode {
 
     public double getHeading(double width, double height, double col, double row){
         //FIND CONSTANT
-        double heading = Math.toDegrees(Math.atan(((Math.abs(270 - col)/96.0)/ ((0.0006 * width * width) - (0.3291 * width) + 57.7663))));
+        double heading = Math.toDegrees(Math.atan(((Math.abs(270 - col)/96.0)/ (-6.3448878 + (4208.05466/width)))));
         if (col < 270)
             heading *= -1;
 

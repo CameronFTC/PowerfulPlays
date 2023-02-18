@@ -129,7 +129,7 @@ public class TFod extends LinearOpMode {
 
         double col = 0;
         double row = 0;
-        double width = 0;
+        double width = 1;
         double height = 0;
         double error = 0;
 
@@ -139,37 +139,44 @@ public class TFod extends LinearOpMode {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Objects Detected", updatedRecognitions.size());
 
                         // step through the list of recognitions and display image position/size information for each one
                         // Note: "Image number" refers to the randomized image orientation/number
-                        for (Recognition recognition : updatedRecognitions) {
-                            col = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                            row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-                            width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
-                            height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
+                        if (updatedRecognitions.size() > 0) {
 
-                            telemetry.addData(""," ");
-                            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
-                            telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
-                            telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
+                            Recognition recognition = updatedRecognitions.get(0);
 
-                            telemetry.addData("error from object:", error);
-                            telemetry.addData("side 1: ", Math.abs(270 - col)/96.0);
-                            telemetry.addData("side 2: ", ((0.0006 * width * width) - (0.3291 * width) + 57.7663));
-                            //-0.00005904x^5 + 0.19x^2 -2.069X + 89.97
-                        }
+                            col = (recognition.getLeft() + recognition.getRight()) / 2;
+                            row = (recognition.getTop() + recognition.getBottom()) / 2;
+                            width = Math.abs(recognition.getRight() - recognition.getLeft());
+                            height = Math.abs(recognition.getTop() - recognition.getBottom());
 
-                        if(gamepad1.a) {
-                            error = getHeading(width, height, col, row) * -0.03;
+                            telemetry.addData("", " ");
+                            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+                            telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
+                            telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
+
+                            telemetry.addData("error from object:", getHeading(width, height, col, row));
+                            telemetry.addData("side 1: ", Math.abs(270 - col) / 96.0);
+                            telemetry.addData("side 2: ", (-6.3448878 + (4208.05466 / width)));
+
+                            if (gamepad1.a) {
+                                error = getHeading(width, height, col, row) * -0.026;
+                            }
+
+
                         } else {
                             error = 0;
-                        }
 
-                        if (updatedRecognitions.size() == 0){
-                            error = 0;
                         }
+                        //-0.00005904x^5 + 0.19x^2 -2.069X + 89.97
+                    } else {
+                        error = 0;
+                    }
+                }
 
                         trigMecanum(error);
                         liftNow();
@@ -254,11 +261,10 @@ public class TFod extends LinearOpMode {
                         telemetry.addData("Fl", hw.fL.getCurrentPosition());
                         telemetry.addData("FR", hw.fR.getCurrentPosition());
                         telemetry.addData("lift: ", hw.lift.getCurrentPosition());
-                    }
+
                 }
             }
         }
-    }
 
     /**
      * Initialize the Vuforia localization engine.
@@ -322,20 +328,20 @@ public class TFod extends LinearOpMode {
         //telemetry.addLine("lift is working!!!!!! woo hoo");
 
         if(gamepad2.left_stick_y < 0.1){
-            hw.lift.setPower(-gamepad2.left_stick_y);
-            hw.lift2.setPower(-gamepad2.left_stick_y);
+            hw.lift.setPower(gamepad2.left_stick_y);
+            hw.lift2.setPower(gamepad2.left_stick_y);
         }
         else if(gamepad2.left_stick_y > -0.1){
-            hw.lift.setPower(-gamepad2.left_stick_y * 0.6);
-            hw.lift2.setPower(-gamepad2.left_stick_y * 0.6);
+            hw.lift.setPower(gamepad2.left_stick_y * 0.6);
+            hw.lift2.setPower(gamepad2.left_stick_y * 0.6);
         }
         else if(gamepad2.right_stick_y > 0.1){
-            hw.lift.setPower(-gamepad2.right_stick_y * 0.3);
-            hw.lift2.setPower(-gamepad2.right_stick_y * 0.3);
+            hw.lift.setPower(gamepad2.right_stick_y * 0.3);
+            hw.lift2.setPower(gamepad2.right_stick_y * 0.3);
         }
         else{
-            hw.lift.setPower(-gamepad2.right_stick_y * 0.15);
-            hw.lift2.setPower(-gamepad2.right_stick_y * 0.15);
+            hw.lift.setPower(gamepad2.right_stick_y * 0.15);
+            hw.lift2.setPower(gamepad2.right_stick_y * 0.15);
         }
 
         //hw.lift.setPower(0.5);
@@ -447,7 +453,7 @@ public class TFod extends LinearOpMode {
 
     public double getHeading(double width, double height, double col, double row){
         //FIND CONSTANT
-        double heading = Math.toDegrees(Math.atan(((Math.abs(270 - col)/96.0)/ ((0.0006 * width * width) - (0.3291 * width) + 57.7663))));
+        double heading = Math.toDegrees(Math.atan(((Math.abs(270 - col)/96.0)/ (-6.3448878 + (4208.05466/width)))));
         if (col < 270)
             heading *= -1;
 
@@ -480,10 +486,10 @@ public class TFod extends LinearOpMode {
 
         telemetry.update();
 
-        hw.fL.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x *  0.75)) * 0.65 + error);
-        hw.fR.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75)) * 0.65 - error);
-        hw.bL.setPower((gamepad1.left_stick_y - gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75)) * 0.65 + error);
-        hw.bR.setPower((gamepad1.left_stick_y + gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75)) * 0.65 - error);
+        hw.fL.setPower(-(-gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x) * 0.65) * 0.75 + error + gamepad2.right_stick_x * 0.3);
+        hw.fR.setPower(-(-gamepad1.left_stick_y - gamepad1.left_stick_x + (gamepad1.right_stick_x) * 0.65) * 0.75 - error - gamepad2.right_stick_x * 0.3);
+        hw.bL.setPower(-(-gamepad1.left_stick_y + gamepad1.left_stick_x - (gamepad1.right_stick_x) * 0.65) * 0.8 + error + gamepad2.right_stick_x * 0.3);
+        hw.bR.setPower(-(-gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x) * 0.65) * 0.75 - error - gamepad2.right_stick_x * 0.3);
 
         /*double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;
         double leftstickx = -gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x);

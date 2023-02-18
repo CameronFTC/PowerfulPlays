@@ -56,7 +56,8 @@ public class hwMap {
         @Override
         public void run() {
 
-            tilt.setPosition(0.9);
+            tilt.setPosition(0.95);
+            wrist.setPosition(0.12);
 
             ElapsedTime timer = new ElapsedTime();
             timer.startTime();
@@ -67,8 +68,8 @@ public class hwMap {
 
             }
 
-            arm1.setPosition(0.85);
-            arm2.setPosition(0.85);
+            arm1.setPosition(0.77);
+            arm2.setPosition(0.77);
         }
     };
 
@@ -77,7 +78,7 @@ public class hwMap {
         @Override
         public void run() {
 
-            tilt.setPosition(0.55);
+            tilt.setPosition(0.8);
 
             ElapsedTime timer = new ElapsedTime();
             timer.startTime();
@@ -88,8 +89,8 @@ public class hwMap {
 
             }
 
-            arm1.setPosition(0.63);
-            arm2.setPosition(0.76);
+            arm1.setPosition(0.77);
+            arm2.setPosition(0.77);
         }
     };
 
@@ -111,7 +112,8 @@ public class hwMap {
 
             }
 
-            tilt.setPosition(0.51);
+            tilt.setPosition(0.54);
+            wrist.setPosition(0.12);
         }
     };
 
@@ -120,8 +122,8 @@ public class hwMap {
         @Override
         public void run() {
 
-            arm1.setPosition(0.13); //mid pick up
-            arm2.setPosition(0.13);
+            arm1.setPosition(0.26); //mid pick up
+            arm2.setPosition(0.26);
 
 
             ElapsedTime timer = new ElapsedTime();
@@ -133,8 +135,8 @@ public class hwMap {
 
             }
 
-            tilt.setPosition(1);
-            wrist.setPosition(1);
+            tilt.setPosition(0.94);
+            wrist.setPosition(0.94);
         }
     };
 
@@ -263,7 +265,7 @@ public class hwMap {
         bL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        bR.setDirection(DcMotorSimple.Direction.REVERSE);
+        //bR.setDirection(DcMotorSimple.Direction.REVERSE);
         fR.setDirection(DcMotorSimple.Direction.REVERSE);
         arm1.setDirection(Servo.Direction.REVERSE);
         lift.setDirection(DcMotorSimple.Direction.REVERSE);

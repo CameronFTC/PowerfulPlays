@@ -36,6 +36,8 @@ public class LeftSideAuto extends LinearOpMode {
 
             sleep(500);
 
+
+            //fsm lift
             hw.autoOuttake(1000, 0.5, 4000);
 
             hw.turnPID(-0.3, -33.5, 0.3/34, 0.9, 0.0006, 4);
@@ -46,12 +48,12 @@ public class LeftSideAuto extends LinearOpMode {
 
             hw.turnPID(0.6, 122, 0.6/122, 0.9, 0.0006, 4);
 
-            /*
+            //fsm lift
             hw.autoOuttake(700, -0.5, 2000);
 
             sleep(100);
 
-            hw.stack.start();
+           /* hw.stack.start();
 
             //put arm code
             hw.goStraightPID2(240, 0.0022, 0.00001, 0.001, 4000, 0.35, -1);
@@ -62,7 +64,7 @@ public class LeftSideAuto extends LinearOpMode {
 
             sleep(1000);
 
-            hw.tilt.setPosition(0);
+            //hw.tilt.setPosition(0);
 
             sleep(1000);
 
@@ -93,7 +95,7 @@ public class LeftSideAuto extends LinearOpMode {
             sleep(3000);
 
 
-            telemetry.addData("after this point the robot is making thinsg up", 0);*/
+            telemetry.addData("after this point the robot is making thinsg up", 0);
 
 
             hw.claw.setPosition(0);
@@ -104,7 +106,7 @@ public class LeftSideAuto extends LinearOpMode {
             hw.arm1.setPosition(0.75);
             hw.arm2.setPosition(0.88);
 
-
+            */
             switch (parkDist) {
                 case "red":
                     hw.goStraightPID2(240, 0.004, 0.0001, 0.001, 4000, -0.7, -1);
