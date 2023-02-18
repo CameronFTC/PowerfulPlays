@@ -33,7 +33,7 @@ public class DriveConstants {
      */
     public static final boolean RUN_USING_ENCODER = true;
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(13, 0, 6,
-            20);
+            19.2);
 
     // getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV)
 
@@ -46,7 +46,7 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.88976; // in
-    public static double GEAR_RATIO = 3.0 / 2.0 * 1.348 * 1.023665616753214; // output (wheel) speed / input (motor) speed
+    public static double GEAR_RATIO = 1.5; // output (wheel) speed / input (motor) speed
     public static double TRACK_WIDTH = -8.04; // in
 
     /*
