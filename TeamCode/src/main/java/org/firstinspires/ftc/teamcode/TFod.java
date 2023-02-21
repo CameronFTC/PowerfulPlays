@@ -488,7 +488,7 @@ public class TFod extends LinearOpMode {
 
         hw.fL.setPower(-(-gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x) * 0.65) * 0.75 + error + gamepad2.right_stick_x * 0.3);
         hw.fR.setPower(-(-gamepad1.left_stick_y - gamepad1.left_stick_x + (gamepad1.right_stick_x) * 0.65) * 0.75 - error - gamepad2.right_stick_x * 0.3);
-        hw.bL.setPower(-(-gamepad1.left_stick_y + gamepad1.left_stick_x - (gamepad1.right_stick_x) * 0.65) * 0.8 + error + gamepad2.right_stick_x * 0.3);
+        hw.bL.setPower(-(-gamepad1.left_stick_y + gamepad1.left_stick_x - (gamepad1.right_stick_x) * 0.65) * 0.75 + error + gamepad2.right_stick_x * 0.3);
         hw.bR.setPower(-(-gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x) * 0.65) * 0.75 - error - gamepad2.right_stick_x * 0.3);
 
         /*double rightstickx = Math.abs(gamepad1.right_stick_x) * -gamepad1.right_stick_x ;

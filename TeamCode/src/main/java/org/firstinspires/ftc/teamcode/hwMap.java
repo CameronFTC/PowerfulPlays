@@ -186,6 +186,29 @@ public class hwMap {
         }
     };
 
+    private Runnable autoPickupRun = new Runnable() {
+        @Override
+        public void run() {
+
+            tilt.setPosition(0.95);
+            wrist.setPosition(0.12);
+
+            ElapsedTime timer = new ElapsedTime();
+            timer.startTime();
+            int waitC = 0;
+
+            while(timer.seconds() < 0.3){
+                waitC ++;
+
+            }
+
+            arm1.setPosition(0.77);
+            arm2.setPosition(0.77);
+
+            autoLift(600, 1.0/600, -0.5);
+        }
+    };
+
     public void autoLift(double target, double kP, double power){
         double pos = lift.getCurrentPosition();
         while((Math.abs(target - pos)) >= 30){
@@ -229,6 +252,7 @@ public class hwMap {
     public Thread stack;
     public Thread liftThread;
     public Thread liftDownThread;
+    public Thread autoPickThread;
 
 
 
@@ -293,6 +317,7 @@ public class hwMap {
         stack = new Thread(stackRun);
         liftThread = new Thread(runLift);
         liftDownThread = new Thread(runLiftDown);
+        autoPickThread = new Thread(autoPickupRun);
 
 
         //driveTrain.srvMarker.setPosition(1);
@@ -317,6 +342,12 @@ public class hwMap {
         this.position = position;
         outtakeThread.start();
     }
+
+
+    public void startAutoPickUp(){
+        autoPickThread.start();
+    }
+
 
     public void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES);

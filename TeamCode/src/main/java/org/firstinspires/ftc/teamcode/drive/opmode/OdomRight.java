@@ -10,31 +10,82 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
-@Autonomous(group = "drive")
+@Autonomous(group = "drive", name = "OdomLeft")
 public class OdomRight extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d startPose = new Pose2d(-36, -63, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-26, -63, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(-33, -18), Math.toRadians(-45))
+                .splineTo(new Vector2d(-28, -18), Math.toRadians(142))
+                //.back(3)
                 .build();
 
-        Trajectory traj2 = drive.trajectoryBuilder(new Pose2d(-33, -18, Math.toRadians(-45)))
-                .splineTo(new Vector2d(-54, -10), Math.toRadians(0))
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+                .splineTo(new Vector2d(-54, -13), Math.toRadians(180))
                 .build();
+
+        Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
+                .lineToLinearHeading(new Pose2d(-25, -18, Math.toRadians(142)))
+                .build();
+
+        //hwMap hw = new hwMap(this);
 
         waitForStart();
         if (isStopRequested()) return;
 
         drive.followTrajectory(traj1);
 
-        sleep(1000);
-
+        sleep(300);
+        //hw.pickUpThread.start();
+        //Cycle 1
         drive.followTrajectory(traj2);
+
+
+        sleep(300);
+
+        drive.followTrajectory(traj3);
+
+        sleep(300);
+
+        //Cycle 2
+        drive.followTrajectory(traj2);
+
+        sleep(300);
+
+        drive.followTrajectory(traj3);
+
+        sleep(300);
+
+        //Cycle 3
+        drive.followTrajectory(traj2);
+
+        sleep(300);
+
+        drive.followTrajectory(traj3);
+
+        sleep(300);
+
+        //Cycle 4
+        drive.followTrajectory(traj2);
+
+        sleep(300);
+
+        drive.followTrajectory(traj3);
+
+        sleep(300);
+
+        //Cycle 5
+        drive.followTrajectory(traj2);
+
+        sleep(300);
+
+        drive.followTrajectory(traj3);
+
+        sleep(300);
     }
 }
