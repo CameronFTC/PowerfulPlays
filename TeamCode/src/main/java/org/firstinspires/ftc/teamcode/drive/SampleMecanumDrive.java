@@ -24,8 +24,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.opmode.TwoWheelTrackingLocalizer;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -73,6 +75,8 @@ public class SampleMecanumDrive extends MecanumDrive {
     private TrajectoryFollower follower;
 
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    private DcMotor lift, lift2;
+    public Servo arm1, arm2, claw, tilt, wrist;
     private List<DcMotorEx> motors;
 
     private BNO055IMU imu;
@@ -92,31 +96,11 @@ public class SampleMecanumDrive extends MecanumDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        // TODO: adjust the names of the following hardware devices to match your configuration
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
 
-        // TODO: If the hub containing the IMU you are using is mounted so that the "REV" logo does
-        // not face up, remap the IMU axes so that the z-axis points upward (normal to the floor.)
-        //
-        //             | +Z axis
-        //             |
-        //             |
-        //             |
-        //      _______|_____________     +Y axis
-        //     /       |_____________/|__________
-        //    /   REV / EXPANSION   //
-        //   /       / HUB         //
-        //  /_______/_____________//
-        // |_______/_____________|/
-        //        /
-        //       / +X axis
-        //
-        // This diagram is derived from the axes in section 3.4 https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf
-        // and the placement of the dot/orientation from https://docs.revrobotics.com/rev-control-system/control-system-overview/dimensions#imu-location
-        //
         // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
         //BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
@@ -124,11 +108,24 @@ public class SampleMecanumDrive extends MecanumDrive {
         leftRear = hardwareMap.get(DcMotorEx.class, "fL");
         rightRear = hardwareMap.get(DcMotorEx.class, "bR");
         rightFront = hardwareMap.get(DcMotorEx.class, "fR");
+        lift = hardwareMap.get(DcMotor.class, "lift");
+        lift2 = hardwareMap.get(DcMotor.class, "lift2");
+
+        arm1 = hardwareMap.get(Servo.class, "arm1");
+        arm2 = hardwareMap.get(Servo.class, "arm2");
+        claw = hardwareMap.get(Servo.class, "claw");
+        wrist = hardwareMap.get(Servo.class, "wrist");
+        tilt = hardwareMap.get(Servo.class, "tilt");
 
         //rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        arm1.setDirection(Servo.Direction.REVERSE);
+        lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
+        arm1.setDirection(Servo.Direction.REVERSE);
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -272,6 +269,53 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         setDrivePower(vel);
+    }
+
+    public void lift(int target, double max){
+        double speed = 0.0;
+        target += lift.getCurrentPosition();
+        double start = lift.getCurrentPosition();
+
+        while((lift.getCurrentPosition() < (0.5 * target)) && speed < max){
+            speed = (lift.getCurrentPosition() - start) * 0.0005;
+            lift.setPower(speed);
+            lift2.setPower(speed);
+        }
+
+        double encoderLeft = lift.getCurrentPosition() - start;
+
+        while((target - lift.getCurrentPosition()) > encoderLeft){
+            speed = max;
+            lift.setPower(speed);
+            lift2.setPower(speed);
+        }
+
+        while((lift.getCurrentPosition() < (0.5 * target)) && speed > 0){
+            speed = (target - lift.getCurrentPosition()) * 0.0005;
+            lift.setPower(speed);
+            lift2.setPower(speed);
+        }
+
+        lift.setPower(0);
+        lift2.setPower(0);
+
+    }
+
+    public void armStack(){
+        tilt.setPosition(0.95);
+        wrist.setPosition(0.12);
+
+        ElapsedTime timer = new ElapsedTime();
+        timer.startTime();
+        int waitC = 0;
+
+        while(timer.seconds() < 0.3){
+            waitC ++;
+
+        }
+
+        arm1.setPosition(0.77);
+        arm2.setPosition(0.77);
     }
 
     @NonNull

@@ -27,10 +27,25 @@ public class OdomRight extends LinearOpMode {
 
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .splineTo(new Vector2d(-54, -13), Math.toRadians(180))
+                .addTemporalMarker(2, () -> {
+                    drive.armStack();
+                })
+                .build();
+
+        Trajectory traj4 = drive.trajectoryBuilder(traj1.end())
+                .splineTo(new Vector2d(-54, -13), Math.toRadians(180))
+                .addTemporalMarker(2, () -> {
+                    drive.lift(-800, 0.6);
+                    drive.armStack();
+                })
                 .build();
 
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
                 .lineToLinearHeading(new Pose2d(-25, -18, Math.toRadians(142)))
+                .addTemporalMarker(2, () -> {
+                    drive.lift(800, 0.6);
+                    drive.armStack();
+                })
                 .build();
 
         //hwMap hw = new hwMap(this);
@@ -53,7 +68,7 @@ public class OdomRight extends LinearOpMode {
         sleep(300);
 
         //Cycle 2
-        drive.followTrajectory(traj2);
+        drive.followTrajectory(traj4);
 
         sleep(300);
 
@@ -62,7 +77,7 @@ public class OdomRight extends LinearOpMode {
         sleep(300);
 
         //Cycle 3
-        drive.followTrajectory(traj2);
+        drive.followTrajectory(traj4);
 
         sleep(300);
 
@@ -71,7 +86,7 @@ public class OdomRight extends LinearOpMode {
         sleep(300);
 
         //Cycle 4
-        drive.followTrajectory(traj2);
+        drive.followTrajectory(traj4);
 
         sleep(300);
 
@@ -80,7 +95,7 @@ public class OdomRight extends LinearOpMode {
         sleep(300);
 
         //Cycle 5
-        drive.followTrajectory(traj2);
+        drive.followTrajectory(traj4);
 
         sleep(300);
 
