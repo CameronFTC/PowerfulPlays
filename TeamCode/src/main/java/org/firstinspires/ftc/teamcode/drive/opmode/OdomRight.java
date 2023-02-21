@@ -35,7 +35,7 @@ public class OdomRight extends LinearOpMode {
         Trajectory traj4 = drive.trajectoryBuilder(traj1.end())
                 .splineTo(new Vector2d(-54, -13), Math.toRadians(180))
                 .addTemporalMarker(2, () -> {
-                    drive.lift(-800, 0.6);
+                    drive.lift(-800, 1);
                     drive.armStack();
                 })
                 .build();
@@ -43,7 +43,7 @@ public class OdomRight extends LinearOpMode {
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
                 .lineToLinearHeading(new Pose2d(-25, -18, Math.toRadians(142)))
                 .addTemporalMarker(2, () -> {
-                    drive.lift(800, 0.6);
+                    drive.lift(800, 1);
                     drive.armStack();
                 })
                 .build();
