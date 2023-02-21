@@ -277,7 +277,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         double start = lift.getCurrentPosition();
 
         while((Math.abs(lift.getCurrentPosition()) < Math.abs(0.5 * target)) && Math.abs(speed) < max){
-            speed = (lift.getCurrentPosition() - start) * 0.001;
+            speed = (lift.getCurrentPosition() - start) * 0.001 + 0.1;
             lift.setPower(speed);
             lift2.setPower(speed);
         }
@@ -290,7 +290,7 @@ public class SampleMecanumDrive extends MecanumDrive {
             lift2.setPower(speed);
         }
 
-        while((Math.abs(lift.getCurrentPosition()) < Math.abs(target)) && Math.abs(speed) > 0){
+        while((Math.abs(lift.getCurrentPosition()) < Math.abs(target)) && Math.abs(speed) > 0.2){
             speed = (target - lift.getCurrentPosition()) * 0.001;
             lift.setPower(speed);
             lift2.setPower(speed);
