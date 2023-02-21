@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -276,10 +277,12 @@ public class SampleMecanumDrive extends MecanumDrive {
         target += lift.getCurrentPosition();
         double start = lift.getCurrentPosition();
 
-        while((Math.abs(lift.getCurrentPosition()) < Math.abs(0.5 * target)) && Math.abs(speed) < max){
-            speed = (lift.getCurrentPosition() - start) * 0.001 + 0.1;
+        while((Math.abs(lift.getCurrentPosition()) < Math.abs(0.5 * target)) && Math.abs(speed) < Math.abs(max)){
+            speed = (lift.getCurrentPosition() - start) * 0.02 + 0.1;
             lift.setPower(speed);
             lift2.setPower(speed);
+            telemetry.addData("speed: ",  speed);
+            telemetry.addData("encoder left ",  target - lift.getCurrentPosition());
         }
 
         double encoderLeft = lift.getCurrentPosition() - start;
@@ -288,12 +291,16 @@ public class SampleMecanumDrive extends MecanumDrive {
             speed = max;
             lift.setPower(speed);
             lift2.setPower(speed);
+            telemetry.addData("speed: ",  speed);
+            telemetry.addData("encoder left ",  target - lift.getCurrentPosition());
         }
 
         while((Math.abs(lift.getCurrentPosition()) < Math.abs(target)) && Math.abs(speed) > 0.2){
             speed = (target - lift.getCurrentPosition()) * 0.001;
             lift.setPower(speed);
             lift2.setPower(speed);
+            telemetry.addData("speed: ",  speed);
+            telemetry.addData("encoder left ",  target - lift.getCurrentPosition());
         }
 
         lift.setPower(0);
